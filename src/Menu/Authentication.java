@@ -33,10 +33,14 @@ public class Authentication{
         System.out.println("3. Exit");
 
         AdminMenu adminMenu = new AdminMenu();
+        PortManagerMenu portManagerMenu = new PortManagerMenu();
+
         String option = UserInput.rawInput();
         switch (option) {
             case "1":
                 adminMenu.view();
+            case "2":
+                portManagerMenu.viewLogin();
             case "3":
                 System.exit(1);
             default:
