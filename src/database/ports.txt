@@ -1,0 +1,6 @@
+#ID, Name, Capacity, LandingAbility
+p-01, Long Khanh, 100000kg, Truck Availability
+p-02, District 7, 100000kg, Truck Availability
+p-03, Vung Tau, 100000kg, Unavailability
+p-04, Phan Thiet, 100000kg, Truck Availability
+p-05, Da Nang, 100000kg, Truck Unavailability
