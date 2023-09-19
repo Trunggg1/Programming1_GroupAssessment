@@ -1,6 +1,7 @@
 package interfaces.builders;
 import interfaces.abstracts.Interface;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ public class TableInterface extends Interface {
     private String name;
     private String[] cols;
     private String delimiter;
-    private HashMap<String, String[]> rows = new HashMap<>();
+    private HashMap<Number, String[]> rows = new HashMap<>();
     private HashMap<String, String> options;
     public TableInterface(String id, String name, String[] cols, String delimiter) {
         this.id = id;
@@ -30,8 +31,9 @@ public class TableInterface extends Interface {
 
         if(!hasSameColsLength(parts)) return false;
 
+        int count = rows.size() + 1;
         //Store index and parts data to rows
-        rows.put(parts[0], parts);
+        rows.put(count,parts);
 
         return  true;
     }
@@ -41,16 +43,14 @@ public class TableInterface extends Interface {
         if(!hasSameColsLength(parts)) return  false;
 
         //Set a row with that index with new data
-        rows.put(String.valueOf(index), parts);
+        rows.put(index, parts);
 
         return  true;
     }
     public boolean removeRow(int index){
-        String value = String.valueOf(index);
-
         //Find and remove the row with that index
-        if (rows.containsKey(value)) {
-            rows.remove(value);
+        if (rows.containsKey(index)) {
+            rows.remove(index);
             return true;
         } else {
            return  false;
@@ -76,13 +76,18 @@ public class TableInterface extends Interface {
         count = 0;
 
         //Find and return the highest string length for each column's value
-        for(Map.Entry<String, String[]> entry : rows.entrySet()){
-            String index = entry.getKey();
+        for(Map.Entry<Number, String[]> entry : rows.entrySet()){
+            Number index = entry.getKey();
             String[] row = entry.getValue();
 
-            for (String value : row) {
-                if (longestTextLength[count] < value.length()) {
-                    longestTextLength[count] = value.length();
+            for(int i = 0; i < row.length; i ++){
+                String value = row[i];
+                if(value.matches("^\\s+.*")){
+                    row[i] = value.replaceFirst("^\\s+", "");
+                }
+
+                if (longestTextLength[count] < row[i].length()) {
+                    longestTextLength[count] = row[i].length();
                 }
                 count++;
             }
@@ -116,7 +121,7 @@ public class TableInterface extends Interface {
             String rightSpacing = " ";
 
             int spacing = longestTextLength[i] + gap - col.length();
-            //5 - 3 = 2
+
             if(spacing %  2 != 0){
                 leftSpacing = leftSpacing.repeat(spacing - 2);
                 rightSpacing = rightSpacing.repeat(spacing - 1);
@@ -137,7 +142,7 @@ public class TableInterface extends Interface {
         table.append("\n").append(tableHorizontalLine);
 
         //Start a loop to generate each row in table as a string
-        for(Map.Entry<String, String[]> entry : rows.entrySet()){
+        for(Map.Entry<Number, String[]> entry : rows.entrySet()){
             String[] row = entry.getValue();
 
             table.append("\n");
