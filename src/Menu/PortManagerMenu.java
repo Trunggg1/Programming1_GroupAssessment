@@ -50,8 +50,10 @@ public class PortManagerMenu {
                 String[] parts = fileLine.split(",");
 
                 // Check if the id in the current line matches the target id
-                String currentId = parts[0];
-                if (currentId.equals(id)) {
+                String currentId = parts[0].trim();
+                String targetId = id.trim();
+
+                if (currentId.equals(targetId)) {
                     content.append(line).append("\n");
                 } else {
                     content.append(fileLine).append("\n");
@@ -141,8 +143,6 @@ public class PortManagerMenu {
                 String username = value.get(1);
                 String password = value.get(2);
 
-                ArrayList<String[]> data = ReadDatabase.readAllLines("./src/database/portManagers.txt");
-
                 Scanner fileData;
                 try{
                     fileData = new Scanner(new File("./src/database/portManagers.txt"));
@@ -161,9 +161,9 @@ public class PortManagerMenu {
                         String line = fileData.nextLine();
                         StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
 
-                        usernameField = stringTokenizer.nextToken();
-                        passwordField = stringTokenizer.nextToken();
-                        portIdField = stringTokenizer.nextToken();
+                        usernameField = stringTokenizer.nextToken().trim();
+                        passwordField = stringTokenizer.nextToken().trim();
+                        portIdField = stringTokenizer.nextToken().trim();
 
                         if(usernameField.equals(username) && passwordField.equals(password)){
                                 userFound = true;
