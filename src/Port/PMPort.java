@@ -1,6 +1,6 @@
 package Port;
 
-import Containers.PMContainer;
+import Container.PMContainer;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
@@ -113,7 +113,7 @@ public class PMPort {
 
                             boolean success = updateLinesWithId(portsFilePath, oldId, toString());
                             if(success){
-                               System.out.println("Updated port successfully!");
+                                System.out.println("Updated port successfully!");
                             }else{
                                 System.out.println("Failed to update port!");
                             }
@@ -145,7 +145,7 @@ public class PMPort {
 
                         break;
                     }
-                break;
+                    break;
                 }
                 case "Capacity":{
                     while (true){
@@ -232,7 +232,7 @@ public class PMPort {
                         break;
                     }
                 }
-              break;
+                break;
             }
         }
     }
@@ -240,7 +240,7 @@ public class PMPort {
         switch (option){
             case "Update a vehicle from the port": {
                 break;
-             }
+            }
             case "Display all vehicles from the port": {
                 Scanner input = new Scanner(System.in);
 
@@ -282,7 +282,7 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                   PMContainer.addContainerToDatabase(id);
+                    PMContainer.addContainerToDatabase(id);
 
                     System.out.println("Go back?(Y/N)");
                     String inputResult = input.next();
