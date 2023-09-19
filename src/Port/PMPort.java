@@ -2,12 +2,16 @@ package Port;
 
 import Containers.PMContainer;
 import Vehicle.PMVehicle;
+import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
 
 import java.awt.*;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+
+import static Menu.PortManagerMenu.updateLinesWithId;
 
 public class PMPort {
     private static final String portsFilePath = "./src/database/ports.txt";
@@ -77,6 +81,121 @@ public class PMPort {
 
         return table;
     }
+
+    public String toString(){
+        return  id + ", " + name + ", " + capacity + ", " + landingAbility;
+    }
+    private void updatePort(){
+        OptionsInterface updateInterface = new OptionsInterface("update","Update interface for the Port",2);
+        updateInterface.addOption(1,"Id",null);
+        updateInterface.addOption(2,"Name",null);
+        updateInterface.addOption(3,"Capacity",null);
+        updateInterface.addOption(4,"Landing Ability",null);
+
+        Scanner input = new Scanner(System.in);
+
+        while (true){
+            HashMap<String, String> interfaceData = updateInterface.run(null);
+
+            String option = interfaceData.get("option");
+
+            switch (option){
+                case "Id":{
+                    while (true){
+                        String inputResult = input.next();
+                        System.out.println("Enter Id: ");
+
+                        if(inputResult.matches("^p-\\d++$")){
+                            this.id = inputResult;
+
+                            String line = toString();
+
+                            boolean success = updateLinesWithId(portsFilePath, id, line);
+                            if(success){
+                               System.out.println("Updated port successfully!");
+                            }else{
+                                System.out.println("Failed to update port!");
+                            }
+
+                            break;
+                        }else{
+                            System.out.println("Id must follow this format: p-00");
+                        }
+                    }
+
+                    break;
+                }
+                case "Name":{
+                    while (true){
+                        String inputResult = input.next();
+                        System.out.println("Enter Id: ");
+
+                        this.name = inputResult;
+
+                        String line = toString();
+
+                        boolean success = updateLinesWithId(portsFilePath, id, line);
+                        if(success){
+                            System.out.println("Updated port successfully!");
+                        }else{
+                            System.out.println("Failed to update port!");
+                        }
+
+                        break;
+                    }
+                break;
+                }
+                case "Capacity":{
+                    while (true){
+                        String inputResult = input.next();
+                        System.out.println("Enter Id: ");
+
+                        if(inputResult.matches("^p-\\d++$")){
+                            this.capacity = inputResult;
+
+                            String line = toString();
+
+                            boolean success = updateLinesWithId(portsFilePath, id, line);
+                            if(success){
+                                System.out.println("Updated port successfully!");
+                            }else{
+                                System.out.println("Failed to update port!");
+                            }
+
+                            break;
+                        }else{
+                            System.out.println("Id must follow this format: p-00");
+                        }
+                    }
+                    break;
+                }
+                case "Landing Ability":{
+                    while (true){
+                        String inputResult = input.next();
+                        System.out.println("Enter Id: ");
+
+                        if(inputResult.matches("^p-\\d++$")){
+                            this.landingAbility = inputResult;
+
+                            String line = toString();
+
+                            boolean success = updateLinesWithId(portsFilePath, id, line);
+                            if(success){
+                                System.out.println("Updated port successfully!");
+                            }else{
+                                System.out.println("Failed to update port!");
+                            }
+
+                            break;
+                        }else{
+                            System.out.println("Id must follow this format: p-00");
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
     public PMPort(String id, String name, String capacity, String landingAbility) {
         this.id = id;
         this.name = name;
@@ -86,9 +205,17 @@ public class PMPort {
     public void handlePortOptions(String option){
         switch (option){
             case "Update the port": {
-                //Print port data out
-                //what we want to update Menu
-                //Input + Go back
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    updatePort();
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
             case "Display all ports from database": {

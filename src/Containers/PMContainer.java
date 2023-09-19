@@ -76,6 +76,23 @@ public class PMContainer {
             System.out.println("Failed to add container to database!");
         }
     }
+    public static void updateContainerFromDatabase(){
+        // Create a menu
+        // Run while loop with Scanner to add container id as option
+        // Run menu and get container id
+        // Create a menu with options to choose which part to edit(id, name, portId, etc.)
+        // Run while loop
+        // Run menu and get the edit option
+        // Edit the container with new line data
+        //PortManagerMenu.updateLinesWithId();
+    }
+    public static void deleteContainerFromDatabase(){
+        // Create a menu
+        // Run while loop with Scanner to add container id as option
+        // Run menu and get containerId
+        // Use function to delete container
+        //PortManagerMenu.deleteLinesWithId()
+    }
     public static TableInterface createTableFromDatabase(String id){
         Scanner fileData;
 

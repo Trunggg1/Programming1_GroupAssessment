@@ -15,9 +15,31 @@ public class PortManagerMenu {
     private OptionsInterface mainInterface;
 
     public PortManagerMenu() {}
-    public static boolean updateLinesWithId(String filepath, String id, String line){
+    public static boolean lineHasId(String filePath, String id){
         try {
-            File file = new File(filepath);
+            File file = new File(filePath);
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+
+            String fileLine;
+
+            while ((fileLine = reader.readLine()) != null){
+                String[] parts = fileLine.split(",");
+
+                String currentId = parts[0];
+                if (currentId.equals(id)) {
+                   return  true;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+    public static boolean updateLinesWithId(String filePath, String id, String line){
+        try {
+            File file = new File(filePath);
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
             StringBuilder content = new StringBuilder();
