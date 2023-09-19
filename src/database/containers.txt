@@ -1,0 +1,6 @@
+#id, weight, type, portId
+c-01, 1.5, dryStorage, null
+c-02, 3.2, refrigerated,null
+c-03, 4.6, openTop, null
+c-04, 4.3, liquid, null
+c-05, 2.5, openSide, null
