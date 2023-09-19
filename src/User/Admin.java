@@ -1,9 +1,9 @@
-package users;
+package User;
 
 import Port.AdminPort;
-import Resources.UserInput;
-import Resources.ReadDatabase;
-import Resources.WriteFile;
+import Resource.UserInput;
+import Resource.ReadDatabase;
+import Resource.WriteFile;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,10 +36,10 @@ public class Admin extends Account {
         int id = (int) Files.lines(path).count(); // Define the id of this port
         System.out.println("Enter a name for this port (e.g: District 7): "); // Ask admin to input the port's name
         String name = scanner.nextLine();
-        String ID = String.format("P-%3d", id, name); // Generate the product ID in items' file
+        String ID = String.format("P-%02d", id, name); // Generate the Port ID in items' file
         System.out.println("Enter capacity (e.g: 1000kg): "); // Ask admin to input the port's capacity
         String capacity = scanner.nextLine();
-        System.out.println("Enter landing ability (e.g: Availability) : "); // Ask admin to input the port's landing availability
+        System.out.println("Enter landing ability (e.g: Truck Available / Truck Unavailable) : "); // Ask admin to input the port's landing availability
         String landingAbility = scanner.nextLine();
         pw.println(ID + "," + name + "," + capacity + "," + landingAbility);
 //        // FileMethods.Write product's information to items' file
@@ -76,7 +76,6 @@ public class Admin extends Account {
         }
         System.out.println("Deletion successful");
     }
-
 
 
 }

@@ -1,6 +1,6 @@
-package users;
+package User;
 
-import users.abstracts.User;
+import User.abstracts.User;
 
 public class PortManager extends User {
     public PortManager(String username, String password) {

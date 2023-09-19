@@ -1,7 +1,7 @@
 package Menu;
 
-import Resources.UserInput;
-import Resources.TableInterface;
+import Resource.UserInput;
+import Resource.TableInterface;
 
 import java.io.IOException;
 import java.text.ParseException;
