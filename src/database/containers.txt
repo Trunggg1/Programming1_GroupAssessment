@@ -4,3 +4,4 @@ c-02, 3.2, refrigerated,null
 c-03, 4.6, openTop, null
 c-04, 4.3, liquid, null
 c-05, 2.5, openSide, null
+c-101, 5.6, Dry Storage p-01

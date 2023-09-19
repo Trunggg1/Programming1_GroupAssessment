@@ -15,9 +15,31 @@ public class PortManagerMenu {
     private OptionsInterface mainInterface;
 
     public PortManagerMenu() {}
-    public static boolean updateLinesWithId(String filepath, String id, String line){
+    public static boolean lineHasId(String filePath, String id){
         try {
-            File file = new File(filepath);
+            File file = new File(filePath);
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+
+            String fileLine;
+
+            while ((fileLine = reader.readLine()) != null){
+                String[] parts = fileLine.split(",");
+
+                String currentId = parts[0];
+                if (currentId.equals(id)) {
+                   return  true;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+    public static boolean updateLinesWithId(String filePath, String id, String line){
+        try {
+            File file = new File(filePath);
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
             StringBuilder content = new StringBuilder();
@@ -48,9 +70,9 @@ public class PortManagerMenu {
             return  false;
         }
     }
-    public static boolean deleteLinesWithId(String filepath, String id){
+    public static boolean deleteLinesWithId(String filePath, String id){
         try {
-            File file = new File(filepath);
+            File file = new File(filePath);
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
             StringBuilder content = new StringBuilder();
@@ -74,6 +96,19 @@ public class PortManagerMenu {
             // Write the updated content back to the file
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(content.toString());
+            writer.close();
+
+            return true;
+        }catch (IOException e){
+            return  false;
+        }
+    }
+    public static boolean addLineToDatabase(String filePath, String line){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true)); // Use 'true' to append
+
+            writer.newLine();
+            writer.write(line);
             writer.close();
 
             return true;
