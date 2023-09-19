@@ -152,6 +152,18 @@ public class PMPort {
     public void handleContainerOptions(String option){
         switch (option){
             case "Add a container to database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                   PMContainer.addContainerToDatabase(id);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
 
                 break;
             }
