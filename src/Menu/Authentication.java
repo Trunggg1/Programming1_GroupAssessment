@@ -20,9 +20,7 @@ public class Authentication{
 
         TableInterface.setHeaders("sID", "FULL NAME");
         TableInterface.addRow("S3891483", "Vu Loc");
-        TableInterface.addRow("S3891483", "Vu Loc");
-        TableInterface.addRow("S3891483", "Vu Loc");
-        TableInterface.addRow("S3891483", "Vu Loc");
+        TableInterface.addRow("S3924683", "Nguyen Minh Tri");
         TableInterface.print();
         TableInterface.setHeaders(new String[0]);
         TableInterface.setRows(new ArrayList<String[]>());
