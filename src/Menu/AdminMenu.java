@@ -74,7 +74,7 @@ public class AdminMenu {
         System.out.println("7. Search port managers by ID");
         System.out.println("8. Update ports");
         System.out.println("9. Update vehicles");
-        System.out.println("10. Remove customer by customer ID");
+        System.out.println("10. Remove port manager by port manager ID");
         System.out.println("11. Log out");
         System.out.println("12. Exit");
 
@@ -105,6 +105,30 @@ public class AdminMenu {
                 adminMenu.viewHomepage();
 
              */
+
+            case "8":
+                // Allow user to add more product or remove any product
+                System.out.println("\n================================================= UPDATING PORT =================================================");
+                System.out.println("1. Add port");
+                System.out.println("2. Remove port");
+                System.out.println("3. Back to homepage");
+                String option = UserInput.rawInput();
+                switch (option) {
+                    case "1":
+                        admin.addPort();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+                        adminMenu.viewHomepage();
+
+                    case "2":
+                        admin.deletePort();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+                        adminMenu.viewHomepage();
+
+                    case "3":
+                        adminMenu.viewHomepage();
+                }
         }
     }
 }
