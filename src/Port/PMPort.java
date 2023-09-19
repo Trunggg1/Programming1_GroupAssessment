@@ -3,6 +3,7 @@ package Port;
 import Containers.PMContainer;
 import interfaces.builders.TableInterface;
 
+import java.awt.*;
 import java.io.File;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -60,13 +61,23 @@ public class PMPort {
             }
         }
     }
+    public void handleVehicleOptions(String option) {
+    }
     public void handleContainerOptions(String option){
         switch (option){
             case "Display all containers": {
-                TableInterface table = PMContainer.createTableFromContainersData();
-                System.out.println(table);
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = PMContainer.createTableFromContainersData();
+                    System.out.println(table);
+                    String inputResult = input.next();
+                }
             }
             case "Add a container": {
+                //Menu ask data
+                //Check valid data ?
+                //Cap nhat len database
                 //Ask to give input to add a container
             }
             case "Update a container": {
@@ -76,5 +87,7 @@ public class PMPort {
                 //Display port infomration as a table and user choose options that they want to update
             }
         }
+    }
+    public void handleTripsOptions(String option) {
     }
 }

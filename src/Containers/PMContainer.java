@@ -1,8 +1,10 @@
 package Containers;
 
+import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -12,6 +14,37 @@ public class PMContainer {
     private double weight;
     private String containerType;
     private String portId;
+
+    public static void addContainerToDatabase() {
+        //Yeu cau input
+        while (true){
+            PromptsInterface prompt = new PromptsInterface("containersPrompt","Add container inputs");
+            prompt.addPrompt("Enter id");
+            prompt.addPrompt("Enter weight");
+            prompt.addPrompt("Enter type");
+
+            HashMap<Number, String> results = prompt.startPrompts();
+
+            String idPattern = "^c-\\d{2}$";
+
+            String id = results.get(1);
+            String weight = results.get(2);
+
+            if(!id.matches(idPattern)){
+                System.out.println("Id must follow this format: c-00");
+            }
+
+            if(!weight.matches("^-?\\d+(\\.\\d+)?$")){
+                System.out.println("Weight has to be a double value");
+            }
+
+            //Kiem tra input
+
+            //Input "Go back" to go back
+
+            //Add len database
+        }
+    }
     public static TableInterface createTableFromContainersData(){
         Scanner fileData;
 

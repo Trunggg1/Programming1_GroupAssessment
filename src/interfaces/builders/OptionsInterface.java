@@ -82,14 +82,32 @@ public class OptionsInterface extends Interface {
         }
         return gui.toString();
     }
-    public HashMap<String, String> run(){
+    public HashMap<String, String> run(String interfaceId){
         boolean keepRunning = true;
         Scanner input = new Scanner(System.in);
         int count = 0;
 
         String interfaceTexts = toString();
 
+        if(interfaceId != null){
+            for (Map.Entry<String, OptionsInterface> entry : childOptionsInterface.entrySet()) {
+                OptionsInterface childInterface = entry.getValue();
+
+                if(childInterface.getId().equals(interfaceId)){
+                    System.out.println(interfaceId);
+                    HashMap<String, String> result = childInterface.run(null);
+
+                    if(result != null){
+                        return  result;
+                    }
+
+                    break;
+                }
+            }
+        }
+
         while (keepRunning){
+
             if(count < 2){
                 System.out.println(interfaceTexts);
             }else{
@@ -112,7 +130,7 @@ public class OptionsInterface extends Interface {
                     default:{
                         OptionsInterface childInterface = childOptionsInterface.get(inputResult);
                         if(childInterface != null){
-                            HashMap<String, String> data = childInterface.run();
+                            HashMap<String, String> data = childInterface.run(null);
 
                             if(data != null){
                                 return data;

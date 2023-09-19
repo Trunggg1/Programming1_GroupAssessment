@@ -21,7 +21,7 @@ public class PortManagerMenu {
         menu.addOption(1,"Log in", null);
         menu.addOption(2,"Return", null);
 
-        HashMap<String, String> results = menu.run();
+        HashMap<String, String> results = menu.run(null);
 
         String option = results.get("option");
 
@@ -32,6 +32,7 @@ public class PortManagerMenu {
             promptInterface.addPrompt("Enter password");
 
             boolean keepRunning = true;
+
             while (keepRunning){
                 //Begin to ask question
                 HashMap<Number, String> value = promptInterface.startPrompts();
@@ -75,7 +76,6 @@ public class PortManagerMenu {
                     this.user = new PortManager(username,password);
                     this.port = new PMPort(portIdField);
                     keepRunning = false;
-                    break;
                 }else{
                     System.out.println("Username or Password is incorrect!");
                 }
@@ -140,8 +140,12 @@ public class PortManagerMenu {
         mainInterface.addOption(6,"Statistic", statisticPanel);
     }
     public void run(){
+        String interfaceId = "mainInterface";
+
         while (true){
-            HashMap<String, String> interfaceData = mainInterface.run();
+            HashMap<String, String> interfaceData = mainInterface.run(interfaceId);
+
+            interfaceId = "mainInterface";
 
             String id = interfaceData.get("id");
             String option = interfaceData.get("option");
@@ -150,12 +154,20 @@ public class PortManagerMenu {
                 case "profilePanel" -> {
                 }
                 case "vehiclesPanel" ->{
+                    this.port.handleVehicleOptions(option);
+                    interfaceId = "vehiclesPanel";
                 }
                 case "portPanel" ->{
                     this.port.handlePortOptions(option);
+                    interfaceId = "portPanel";
                 }
                 case "containersPanel" ->{
                     this.port.handleContainerOptions(option);
+                    interfaceId = "containersPanel";
+                }
+                case "tripsPanel" ->{
+                    this.port.handleTripsOptions(option);
+                    interfaceId = "tripsPanel";
                 }
             }
 
