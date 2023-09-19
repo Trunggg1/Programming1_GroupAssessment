@@ -63,9 +63,9 @@ public class PMContainer {
         String line;
 
         if(addContainerToPort){
-            line = id + ", " + weight + ", " + type + portId;
+            line = id + ", " + weight + ", " + type + "," + portId;
         }else{
-            line = id + ", " + weight + ", " + type + "null";
+            line = id + ", " + weight + ", " + type + "," + "null";
         }
 
         boolean success = PortManagerMenu.addLineToDatabase(containersFilePath, line);
