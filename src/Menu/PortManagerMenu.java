@@ -6,7 +6,7 @@ import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import users.PortManager;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 public class PortManagerMenu {
@@ -15,7 +15,72 @@ public class PortManagerMenu {
     private OptionsInterface mainInterface;
 
     public PortManagerMenu() {}
+    public static boolean updateLinesWithId(String filepath, String id, String line){
+        try {
+            File file = new File(filepath);
 
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+
+            String fileLine;
+            while ((fileLine = reader.readLine()) != null){
+                // Split the line into parts based on a delimiter (e.g., comma or tab)
+                String[] parts = fileLine.split(",");
+
+                // Check if the id in the current line matches the target id
+                String currentId = parts[0];
+                if (currentId.equals(id)) {
+                    content.append(line).append("\n");
+                } else {
+                    content.append(fileLine).append("\n");
+                }
+            }
+
+            reader.close();
+
+            // Write the updated content back to the file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(content.toString());
+            writer.close();
+
+            return true;
+        }catch (IOException e){
+            return  false;
+        }
+    }
+    public static boolean deleteLinesWithId(String filepath, String id){
+        try {
+            File file = new File(filepath);
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+
+            String fileLine;
+            while ((fileLine = reader.readLine()) != null){
+                // Split the line into parts based on a delimiter (e.g., comma or tab)
+                String[] parts = fileLine.split(",");
+
+                // Check if the id in the current line matches the target id
+                String currentId = parts[0];
+                if (currentId.equals(id)) {
+                   //Do nothing
+                } else {
+                    content.append(fileLine).append("\n");
+                }
+            }
+
+            reader.close();
+
+            // Write the updated content back to the file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(content.toString());
+            writer.close();
+
+            return true;
+        }catch (IOException e){
+            return  false;
+        }
+    }
     public void viewLogin(){
         OptionsInterface menu = new OptionsInterface("portManagerLogin","Port Manager login",2);
         menu.addOption(1,"Log in", null);
@@ -101,26 +166,32 @@ public class PortManagerMenu {
         profilePanel.addOption(4,"Go back", null);
 
         OptionsInterface vehiclesPanel = new OptionsInterface("vehiclesPanel","Vehicles Panel",2);
-        vehiclesPanel.addOption(1,"Update a vehicle", null);
-        vehiclesPanel.addOption(2,"Go back", null);
+        vehiclesPanel.addOption(1,"Update a vehicle from the port", null);
+        vehiclesPanel.addOption(2,"Display all vehicles from the port", null);
+        vehiclesPanel.addOption(3,"Display all vehicles from database", null);
+        vehiclesPanel.addOption(4,"Go back", null);
 
-        OptionsInterface containersPanel = new OptionsInterface("containersPanel","Containers Panel",2);
-        containersPanel.addOption(1,"Add a container", null);
-        containersPanel.addOption(2,"Update a container", null);
-        containersPanel.addOption(3,"Delete a container", null);
-        containersPanel.addOption(4,"Display all containers", null);
-        containersPanel.addOption(5,"Go back", null);
+        OptionsInterface containersPanel = new OptionsInterface("containersPanel","Containers Panel",3);
+        containersPanel.addOption(1,"Add a container to database", null);
+        containersPanel.addOption(2,"Update a container from database", null);
+        containersPanel.addOption(3,"Delete a container from database", null);
+        containersPanel.addOption(4,"Display all containers from the port", null);
+        containersPanel.addOption(5,"Display all containers from database", null);
+        containersPanel.addOption(6,"Go back", null);
 
         //Port Panel
-        OptionsInterface portPanel = new OptionsInterface("portPanel","Port Panel",2);
-        portPanel.addOption(1,"Update a port", null);
-        portPanel.addOption(2,"Go back", null);
+        OptionsInterface portPanel = new OptionsInterface("portPanel","Port Panel",3);
+        portPanel.addOption(1,"Update the port", null);
+        portPanel.addOption(2,"Display all ports from database", null);
+        portPanel.addOption(3,"Go back", null);
 
-        OptionsInterface tripsPanel = new OptionsInterface("tripPanel","Trip Panel",2);
-        tripsPanel.addOption(1,"Add a trip", null);
-        tripsPanel.addOption(2,"Update a trip", null);
-        tripsPanel.addOption(3,"Delete a trip", null);
-        tripsPanel.addOption(4,"Go back", null);
+        OptionsInterface tripsPanel = new OptionsInterface("tripPanel","Trip Panel",3);
+        tripsPanel.addOption(1,"Add a trip to database", null);
+        tripsPanel.addOption(2,"Update a trip from database", null);
+        tripsPanel.addOption(3,"Delete a trip from database", null);
+        tripsPanel.addOption(4,"Display all trips from the port", null);
+        tripsPanel.addOption(5,"Display trips from database", null);
+        tripsPanel.addOption(6,"Go back", null);
 
         OptionsInterface statisticPanel = new OptionsInterface("statisticPanel","Statistic Panel",4);
         statisticPanel.addOption(1,"Profile", null);
@@ -152,6 +223,7 @@ public class PortManagerMenu {
 
             switch (id) {
                 case "profilePanel" -> {
+                    // this.user.handleProfileOptions(option);
                 }
                 case "vehiclesPanel" ->{
                     this.port.handleVehicleOptions(option);
@@ -168,6 +240,10 @@ public class PortManagerMenu {
                 case "tripsPanel" ->{
                     this.port.handleTripsOptions(option);
                     interfaceId = "tripsPanel";
+                }
+                case "statisticPanel" ->{
+                    this.port.handleStatisticOptions(option);
+                    interfaceId = "statisticPanel";
                 }
             }
 

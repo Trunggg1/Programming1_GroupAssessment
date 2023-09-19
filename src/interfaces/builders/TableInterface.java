@@ -113,7 +113,6 @@ public class TableInterface extends Interface {
         //Print out the first table line
         table.append(tableHorizontalLine).append("\n").append(verticalLine);
 
-        System.out.println(Arrays.toString(longestTextLength));
         //Print out columns in the middle
         for(int i = 0; i < cols.length; i++){
             String col = cols[i];

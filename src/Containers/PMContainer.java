@@ -45,7 +45,7 @@ public class PMContainer {
             //Add len database
         }
     }
-    public static TableInterface createTableFromContainersData(){
+    public static TableInterface createTableFromDatabase(String id){
         Scanner fileData;
 
         try{
@@ -61,9 +61,19 @@ public class PMContainer {
         if(fileData!= null){
             while (fileData.hasNext()){
                 String line = fileData.nextLine();
+                String[] parts = line.split(",");
 
                 if(count != 1){
-                    table.addRow(line);
+                    if(id!= null){
+                        String portId = parts[3].trim();
+                        String trimmedId = id.trim();
+
+                        if(trimmedId.equals(portId)){
+                            table.addRow(line);
+                        }
+                    }else{
+                        table.addRow(line);
+                    }
                 }
 
                 count++;

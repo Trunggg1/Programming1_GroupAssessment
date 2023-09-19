@@ -1,6 +1,7 @@
 package Port;
 
 import Containers.PMContainer;
+import Vehicle.PMVehicle;
 import interfaces.builders.TableInterface;
 
 import java.awt.*;
@@ -9,7 +10,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class PMPort {
-    private final String portsFilePath = "./src/database/ports.txt";
+    private static final String portsFilePath = "./src/database/ports.txt";
     private String id;
     private String name;
     private String capacity;
@@ -18,7 +19,7 @@ public class PMPort {
         Scanner fileData;
 
         try{
-            fileData = new Scanner(new File(this.portsFilePath));
+            fileData = new Scanner(new File(portsFilePath));
         }catch (Exception e){
             fileData = null;
         }
@@ -48,6 +49,34 @@ public class PMPort {
         this.id = id;
         getPortData();
     }
+    public static TableInterface createTableFromDatabase(){
+        Scanner fileData;
+
+        try{
+            fileData = new Scanner(new File(portsFilePath));
+        }catch (Exception e){
+            fileData = null;
+        }
+
+        String[] containersCols = {"Id","Name","Capacity","Landing Ability"};
+        TableInterface table = new TableInterface("ports","Ports",containersCols,",");
+
+        int count = 1;
+        if(fileData!= null){
+            while (fileData.hasNext()){
+                String line = fileData.nextLine();
+
+                if(count != 1){
+                    System.out.println(line);
+                    table.addRow(line);
+                }
+
+                count++;
+            }
+        }
+
+        return table;
+    }
     public PMPort(String id, String name, String capacity, String landingAbility) {
         this.id = id;
         this.name = name;
@@ -56,38 +85,157 @@ public class PMPort {
     }
     public void handlePortOptions(String option){
         switch (option){
-            case "Update a port": {
-                //Display port infomration as a table and user choose options that they want to update
+            case "Update the port": {
+                //Print port data out
+                //what we want to update Menu
+                //Input + Go back
+                break;
+            }
+            case "Display all ports from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = createTableFromDatabase();
+                    System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
+              break;
             }
         }
     }
     public void handleVehicleOptions(String option) {
-    }
-    public void handleContainerOptions(String option){
         switch (option){
-            case "Display all containers": {
+            case "Update a vehicle from the port": {
+                break;
+             }
+            case "Display all vehicles from the port": {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    TableInterface table = PMContainer.createTableFromContainersData();
+                    TableInterface table = PMVehicle.createTableFromDatabase(this.name);
                     System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
                     String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
                 }
+
+                break;
+            }case "Display all vehicles from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = PMVehicle.createTableFromDatabase(null);
+                    System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
+
+                break;
             }
-            case "Add a container": {
-                //Menu ask data
-                //Check valid data ?
-                //Cap nhat len database
-                //Ask to give input to add a container
+        }
+    }
+    public void handleContainerOptions(String option){
+        switch (option){
+            case "Add a container to database": {
+
+                break;
             }
-            case "Update a container": {
-                //Send out prompts to collect inputs
+            case "Update a container from database": {
+                break;
             }
-            case "Delete a container": {
-                //Display port infomration as a table and user choose options that they want to update
+            case "Delete a container from database": {
+                break;
+            }
+            case "Display all containers from the port": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = PMContainer.createTableFromDatabase(this.id);
+                    System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
+
+                break;
+            }
+            case "Display all containers from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = PMContainer.createTableFromDatabase(null);
+                    System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
+
+                break;
             }
         }
     }
     public void handleTripsOptions(String option) {
+        switch (option){
+            case "Add a trip to database": {
+                Scanner input = new Scanner(System.in);
+                break;
+            }
+            case "Update a trip from database": {
+                break;
+            }case "Delete a trip from database": {
+                break;
+            }
+            case "Display all trips from the port": {
+                break;
+            }
+            case "Display trips from database": {
+                break;
+            }
+        }
+    }
+    public void handleStatisticOptions(String option) {
+        switch (option){
+            case "Profile": {
+                Scanner input = new Scanner(System.in);
+                break;
+            }
+            case "Port": {
+                break;
+            }case "Containers": {
+                break;
+            }
+            case "Vehicles": {
+                break;
+            }
+            case "Trips": {
+                break;
+            }
+            case "Summary": {
+                break;
+            }
+        }
     }
 }
