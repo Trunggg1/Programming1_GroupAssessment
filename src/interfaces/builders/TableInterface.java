@@ -123,8 +123,8 @@ public class TableInterface extends Interface {
             int spacing = longestTextLength[i] + gap - col.length();
 
             if(spacing %  2 != 0){
-                leftSpacing = leftSpacing.repeat(spacing - 2);
-                rightSpacing = rightSpacing.repeat(spacing - 1);
+                leftSpacing = leftSpacing.repeat((spacing-1)/2);
+                rightSpacing = rightSpacing.repeat((spacing/2) + 1);
             }else{
                 leftSpacing = leftSpacing.repeat(spacing/ 2);
                 rightSpacing = rightSpacing.repeat(spacing/ 2);

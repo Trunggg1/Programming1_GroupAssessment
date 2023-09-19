@@ -1,10 +1,7 @@
-package users;
-
-import Resources.TableInterface;
+package User;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 public class Account {
     // Attributes

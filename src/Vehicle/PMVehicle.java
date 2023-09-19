@@ -35,7 +35,7 @@ public class PMVehicle {
 
                 if(count != 1){
                     if(portName!= null){
-                        String portId = parts[6].trim();
+                        String portId = parts[5].trim();
                         String trimmedId = portName.trim();
 
                         if(trimmedId.equals(portId)){

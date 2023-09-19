@@ -1,10 +1,10 @@
 package Menu;
 
 import Port.PMPort;
-import Resources.ReadDatabase;
+import Resource.ReadDatabase;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
-import users.PortManager;
+import User.PortManager;
 
 import java.io.*;
 import java.util.*;
@@ -29,7 +29,7 @@ public class PortManagerMenu {
 
                 String currentId = parts[0];
                 if (currentId.equals(id)) {
-                   return  true;
+                    return  true;
                 }
             }
         } catch (IOException e) {
@@ -87,7 +87,7 @@ public class PortManagerMenu {
                 // Check if the id in the current line matches the target id
                 String currentId = parts[0];
                 if (currentId.equals(id)) {
-                   //Do nothing
+                    //Do nothing
                 } else {
                     content.append(fileLine).append("\n");
                 }
@@ -166,8 +166,8 @@ public class PortManagerMenu {
                         portIdField = stringTokenizer.nextToken().trim();
 
                         if(usernameField.equals(username) && passwordField.equals(password)){
-                                userFound = true;
-                                break;
+                            userFound = true;
+                            break;
                         }
                     }
                 }

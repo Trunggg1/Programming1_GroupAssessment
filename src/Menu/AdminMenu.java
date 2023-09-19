@@ -1,15 +1,13 @@
 package Menu;
 
-import Resources.TableInterface;
-import Resources.UserInput;
+import Resource.UserInput;
 import Port.AdminPort;
 import Vehicle.AdminVehicle;
-import users.Admin;
+import User.Admin;
 
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 

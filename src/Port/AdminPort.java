@@ -1,6 +1,6 @@
 package Port;
 
-import Resources.TableInterface;
+import Resource.TableInterface;
 
 import java.io.*;
 import java.util.ArrayList;

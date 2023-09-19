@@ -1,4 +1,4 @@
-package Resources;
+package Resource;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
