@@ -1,4 +1,4 @@
-package Containers;
+package Container;
 
 import Menu.PortManagerMenu;
 import interfaces.builders.OptionsInterface;
@@ -6,7 +6,6 @@ import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -85,14 +84,14 @@ public class PMContainer {
         // Run while loop
         // Run menu and get the edit option
         // Edit the container with new line data
-        //PortManagerMenu.updateLinesWithId();
+        //PortManagerMenu.java.updateLinesWithId();
     }
     public static void deleteContainerFromDatabase(){
         // Create a menu
         // Run while loop with Scanner to add container id as option
         // Run menu and get containerId
         // Use function to delete container
-        //PortManagerMenu.deleteLinesWithId()
+        //PortManagerMenu.java.deleteLinesWithId()
     }
     public static TableInterface createTableFromDatabase(String id){
         Scanner fileData;
@@ -104,7 +103,7 @@ public class PMContainer {
         }
 
         String[] containersCols = {"id","weight","type","portId"};
-        TableInterface table = new TableInterface("containersData","Containers",containersCols,",");
+        TableInterface table = new TableInterface("containersData", "Container",containersCols,",");
 
         int count = 1;
         if(fileData!= null){

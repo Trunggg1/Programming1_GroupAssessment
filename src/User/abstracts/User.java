@@ -1,4 +1,4 @@
-package users.abstracts;
+package User.abstracts;
 
 public abstract class User {
     private String type;
