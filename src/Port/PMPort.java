@@ -1,9 +1,11 @@
 package Port;
 
 import Containers.PMContainer;
+import Trip.PMTrip;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
+import users.PortManager;
 
 import java.awt.*;
 import java.io.File;
@@ -50,7 +52,7 @@ public class PMPort {
         }
     }
     public PMPort(String id) {
-        this.id = id;
+        this.id = id.trim();
         getPortData();
     }
     public static TableInterface createTableFromDatabase(){
@@ -81,60 +83,34 @@ public class PMPort {
 
         return table;
     }
-
     public String toString(){
         return  id + ", " + name + ", " + capacity + ", " + landingAbility;
     }
     private void updatePort(){
-        OptionsInterface updateInterface = new OptionsInterface("update","Update interface for the Port",2);
-        updateInterface.addOption(1,"Id",null);
-        updateInterface.addOption(2,"Name",null);
-        updateInterface.addOption(3,"Capacity",null);
-        updateInterface.addOption(4,"Landing Ability",null);
+        OptionsInterface updateInterface = new OptionsInterface("update","What do you want to update for the port?",2);
+        updateInterface.addOption(1,"Name",null);
+        updateInterface.addOption(2,"Capacity",null);
+        updateInterface.addOption(3,"Landing Ability",null);
+        updateInterface.addOption(4,"Return",null);
 
         Scanner input = new Scanner(System.in);
 
-        while (true){
+        boolean keepRunning = true;
+
+        while (keepRunning){
+            System.out.println("Current port: " + this);
             HashMap<String, String> interfaceData = updateInterface.run(null);
 
             String option = interfaceData.get("option");
 
             switch (option){
-                case "Id":{
-                    while (true){
-                        String inputResult = input.next();
-                        System.out.println("Enter Id: ");
-
-                        if(inputResult.matches("^p-\\d++$")){
-                            this.id = inputResult;
-
-                            String line = toString();
-
-                            boolean success = updateLinesWithId(portsFilePath, id, line);
-                            if(success){
-                               System.out.println("Updated port successfully!");
-                            }else{
-                                System.out.println("Failed to update port!");
-                            }
-
-                            break;
-                        }else{
-                            System.out.println("Id must follow this format: p-00");
-                        }
-                    }
-
-                    break;
-                }
                 case "Name":{
                     while (true){
-                        String inputResult = input.next();
-                        System.out.println("Enter Id: ");
+                        System.out.println("Enter name: ");
 
-                        this.name = inputResult;
+                        this.name = input.nextLine();
 
-                        String line = toString();
-
-                        boolean success = updateLinesWithId(portsFilePath, id, line);
+                        boolean success = updateLinesWithId(portsFilePath, id, toString());
                         if(success){
                             System.out.println("Updated port successfully!");
                         }else{
@@ -147,50 +123,48 @@ public class PMPort {
                 }
                 case "Capacity":{
                     while (true){
-                        String inputResult = input.next();
-                        System.out.println("Enter Id: ");
+                        System.out.println("Enter Capacity(ex: 1000Kg): ");
 
-                        if(inputResult.matches("^p-\\d++$")){
-                            this.capacity = inputResult;
+                        this.capacity = input.nextLine();
 
-                            String line = toString();
+                        boolean success = updateLinesWithId(portsFilePath, id, toString());
 
-                            boolean success = updateLinesWithId(portsFilePath, id, line);
-                            if(success){
-                                System.out.println("Updated port successfully!");
-                            }else{
-                                System.out.println("Failed to update port!");
-                            }
-
-                            break;
+                        if(success){
+                            System.out.println("Updated port successfully!");
                         }else{
-                            System.out.println("Id must follow this format: p-00");
+                            System.out.println("Failed to update port!");
                         }
+
+                        break;
                     }
                     break;
                 }
                 case "Landing Ability":{
                     while (true){
-                        String inputResult = input.next();
-                        System.out.println("Enter Id: ");
+                        OptionsInterface questionInterface = new OptionsInterface("askQuestion","Which landing ability does this port have?",4);
+                        questionInterface.addOption(1,"Truck Availability",null);
+                        questionInterface.addOption(2,"Unavailability", null);
 
-                        if(inputResult.matches("^p-\\d++$")){
-                            this.landingAbility = inputResult;
+                        interfaceData = questionInterface.run(null);
 
-                            String line = toString();
+                        this.landingAbility = interfaceData.get("option");
 
-                            boolean success = updateLinesWithId(portsFilePath, id, line);
-                            if(success){
-                                System.out.println("Updated port successfully!");
-                            }else{
-                                System.out.println("Failed to update port!");
-                            }
+                        String line = toString();
 
-                            break;
+                        boolean success = updateLinesWithId(portsFilePath, id, line);
+
+                        if(success){
+                            System.out.println("Updated port successfully!");
                         }else{
-                            System.out.println("Id must follow this format: p-00");
+                            System.out.println("Failed to update port!");
                         }
+
+                        break;
                     }
+                    break;
+                }
+                case "Return":{
+                    keepRunning = false;
                     break;
                 }
             }
@@ -210,7 +184,7 @@ public class PMPort {
                 while (true){
                     updatePort();
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -226,7 +200,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -239,6 +213,7 @@ public class PMPort {
     public void handleVehicleOptions(String option) {
         switch (option){
             case "Update a vehicle from the port": {
+                PMVehicle.updateVehiclesFromDatabase(name);
                 break;
              }
             case "Display all vehicles from the port": {
@@ -249,7 +224,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -265,7 +240,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -285,7 +260,7 @@ public class PMPort {
                    PMContainer.addContainerToDatabase(id);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -295,9 +270,43 @@ public class PMPort {
                 break;
             }
             case "Update a container from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    OptionsInterface questionInterface = new OptionsInterface("askQuestion", "Display containers inside port only?", 2);
+                    questionInterface.addOption(1,"Yes", null);
+                    questionInterface.addOption(2,"No", null);
+
+                    HashMap<String, String> interfaceData = questionInterface.run(null);
+
+                    if(interfaceData.get("option").equals("Yes")){
+                        PMContainer.updateContainerFromDatabase(id);
+                    }else{
+                        PMContainer.updateContainerFromDatabase(null);
+                    }
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.nextLine();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
             case "Delete a container from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    PMContainer.deleteContainerFromDatabase();
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.nextLine();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
             case "Display all containers from the port": {
@@ -308,7 +317,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -325,7 +334,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -339,18 +348,22 @@ public class PMPort {
     public void handleTripsOptions(String option) {
         switch (option){
             case "Add a trip to database": {
-                Scanner input = new Scanner(System.in);
+                PMTrip.addTripToDatabase();
                 break;
             }
             case "Update a trip from database": {
+                PMTrip.updateTripToDatabase();
                 break;
             }case "Delete a trip from database": {
+                PMTrip.deleteTripToDatabase();
                 break;
             }
             case "Display all trips from the port": {
+                PMTrip.displayAllTripsFromDatabase(id);
                 break;
             }
             case "Display trips from database": {
+                PMTrip.displayAllTripsFromDatabase(null);
                 break;
             }
         }

@@ -94,7 +94,6 @@ public class OptionsInterface extends Interface {
                 OptionsInterface childInterface = entry.getValue();
 
                 if(childInterface.getId().equals(interfaceId)){
-                    System.out.println(interfaceId);
                     HashMap<String, String> result = childInterface.run(null);
 
                     if(result != null){
@@ -115,7 +114,7 @@ public class OptionsInterface extends Interface {
             }
             System.out.print("Input: ");
 
-            String inputResult = input.next();
+            String inputResult = input.nextLine();
 
             if(options.containsKey(inputResult)){
                 String textOption = options.get(inputResult);
@@ -124,7 +123,6 @@ public class OptionsInterface extends Interface {
                     case "Go back", "Exit":{
                         keepRunning = false;
 
-                        System.out.println(keepRunning);
                         break;
                     }
                     default:{
