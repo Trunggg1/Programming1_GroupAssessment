@@ -1,5 +1,6 @@
 package Menu;
 
+import Resource.ReadDatabase;
 import Resource.UserInput;
 import Port.AdminPort;
 import Vehicle.AdminVehicle;
@@ -8,8 +9,10 @@ import User.Admin;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+
 
 public class AdminMenu {
 
@@ -38,7 +41,7 @@ public class AdminMenu {
                     String password = scanner.nextLine();
 
                     if (!admin.verifyAdmin(username, password)) {
-                        System.out.println("Wrong password, try again !!!!!");
+                        System.out.println("Wrong password, try again!");
 
                     } else {
                         this.viewHomepage();
@@ -64,10 +67,10 @@ public class AdminMenu {
     // Display the homepage for admin when he/she log in successfully
     public void viewHomepage() throws IOException, InterruptedException, ParseException {
         System.out.println("\n================================================= HOMEPAGE =================================================");
-        System.out.println("\n1. List all ports' information");
-        System.out.println("2. List all vehicles' information");
-        System.out.println("3. List all port managers' information");
-        System.out.println("4. List all containers information");
+        System.out.println("\n1. Ports' information");
+        System.out.println("2. Vehicles' information");
+        System.out.println("3. Port managers' information");
+        System.out.println("4. Containers information");
         System.out.println("5. List all statistics");
         System.out.println("7. Search port managers by ID");
         System.out.println("8. Update ports");
@@ -81,14 +84,75 @@ public class AdminMenu {
         Admin admin = new Admin();
         AdminVehicle Vehicle = new AdminVehicle();
         AdminMenu adminMenu = new AdminMenu();
-
         String choice = UserInput.rawInput();
+
+
         switch (choice) {
             case "1":
-                // Display the information of all Ports
-                Port.getAllPortInfo();
-                TimeUnit.SECONDS.sleep(1);
-                adminMenu.viewHomepage();
+                // Allow user view and update ports
+                System.out.println("\n================================================= PORT INFORMATION =================================================");
+                System.out.println("1. List all ports' information");
+                System.out.println("2. Add port");
+                System.out.println("3. Remove port");
+                System.out.println("4. Update ports' name");
+                System.out.println("5. Update ports' capacity");
+                System.out.println("6. Update ports' landing ability");
+                System.out.println("7. Back to homepage");
+                String option = UserInput.rawInput();
+
+                switch (option) {
+                    // Display the information of all Ports
+                    case "1":
+                        Port.getAllPortInfo();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Create new port
+                    case "2":
+                        admin.addPort();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Delete new port
+                    case "3":
+                        admin.deletePort();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Update port's name
+                    case "4":
+                        Port.getAllPortInfo();
+                        System.out.print("Enter port's ID to update: ");
+                        String nId = scanner.nextLine();
+                        System.out.println("Update port's name to:");
+                        String name = scanner.nextLine();
+                        Port.updatePortName("./src/database/ports.txt", name, nId);
+                        adminMenu.viewHomepage();
+
+                        //Update port's capacity
+                    case "5":
+                        Port.getAllPortInfo();
+                        System.out.print("Enter port's ID to update: ");
+                        String cId = scanner.nextLine();
+                        System.out.println("Update port's capacity to:");
+                        String capacity = scanner.nextLine();
+                        Port.updatePortCapacity("./src/database/ports.txt", capacity, cId);
+                        adminMenu.viewHomepage();
+
+                        //Update port's landing ability
+                    case "6":
+                        Port.getAllPortInfo();
+                        System.out.print("Enter port's ID to update: ");
+                        String lId = scanner.nextLine();
+                        System.out.println("Update port's landing ability to:");
+                        String landingAbility = scanner.nextLine();
+                        Port.updatePortLandingAbility("./src/database/ports.txt", landingAbility, lId);
+                        adminMenu.viewHomepage();
+
+                        //Back to homepage
+                    case "7":
+                        adminMenu.viewHomepage();
+                }
 
             case "2":
                 // Display the information of all Vehicle
@@ -104,29 +168,7 @@ public class AdminMenu {
 
              */
 
-            case "8":
-                // Allow user to add more product or remove any product
-                System.out.println("\n================================================= UPDATING PORT =================================================");
-                System.out.println("1. Add port");
-                System.out.println("2. Remove port");
-                System.out.println("3. Back to homepage");
-                String option = UserInput.rawInput();
-                switch (option) {
-                    case "1":
-                        admin.addPort();
-                        TimeUnit.SECONDS.sleep(1);
-                        adminMenu.viewHomepage();
-                        adminMenu.viewHomepage();
 
-                    case "2":
-                        admin.deletePort();
-                        TimeUnit.SECONDS.sleep(1);
-                        adminMenu.viewHomepage();
-                        adminMenu.viewHomepage();
-
-                    case "3":
-                        adminMenu.viewHomepage();
-                }
         }
     }
 }
