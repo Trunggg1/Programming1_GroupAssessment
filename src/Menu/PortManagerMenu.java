@@ -258,7 +258,7 @@ public class PortManagerMenu {
 
             switch (id) {
                 case "profilePanel" -> {
-                    // this.user.handleProfileOptions(option);
+                    this.user.handleProfileOptions(option);
                 }
                 case "vehiclesPanel" ->{
                     this.port.handleVehicleOptions(option);

@@ -5,12 +5,34 @@ public abstract class User {
     private String username;
     private String password;
 
+
     public User(String username, String password, String type) {
         this.username = username;
         this.password = password;
         this.type = type;
     }
-
+    public void changePassword(){
+        //Create a menu to ask to input password
+        //Change the password on database
+        //Update the password: this.password =
+        //Println new Username and Password
+    }
+    public void changeUsername(){
+        //Create a menu to ask to input password
+        //Change the password on database
+        //Update the password: this.username =
+        //Println new Username and Password
+    }
+    public void handleProfileOptions(String option) {
+        switch (option){
+            case "Change username"->{
+               changeUsername();
+            }
+            case "Change password"->{
+                changePassword();
+            }
+        }
+    }
     public void showProfile(){
         System.out.println("Username: " + username);
         System.out.println("Password: " +  password);
@@ -37,4 +59,6 @@ public abstract class User {
     public void setType(String type) {
         this.type = type;
     }
+
+
 }
