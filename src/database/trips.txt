@@ -1,0 +1,2 @@
+#id , vehicleId, portA, portB, status, date
+t-1, btr-02, p-01, p-02, success, null

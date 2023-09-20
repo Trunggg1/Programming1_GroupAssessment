@@ -5,11 +5,11 @@ import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
 
+import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.io.FileNotFoundException;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class PMContainer {
     private static final String containersFilePath = "./src/database/containers.txt";
@@ -77,7 +77,211 @@ public class PMContainer {
             System.out.println("Failed to add container to database!");
         }
     }
-    public static void updateContainerFromDatabase(){
+    public static void updateContainerFromDatabase(String portId){
+        boolean keepRunning = true;
+
+        while (keepRunning){
+            Scanner fileData;
+            OptionsInterface mainInterface = new OptionsInterface("askQuestion","Which container you want to update?", 5);
+
+            int count = 1;
+
+            try{
+                fileData = new Scanner(new File(containersFilePath));
+            }catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            ArrayList<String> lines = new ArrayList<String>();
+
+            if(fileData!= null){
+                while (fileData.hasNext()){
+                    String line = fileData.nextLine();
+                    String[] parts = line.split(",");
+
+                    if(parts[0].matches("^c-\\d+$")){
+                        if(portId != null){
+                            if(parts[3].trim().equals(portId)){
+                                mainInterface.addOption(count,parts[0],null);
+                                lines.add(line);
+                                count++;
+                            }
+                        }
+                        else{
+                            mainInterface.addOption(count,parts[0],null);
+                            lines.add(line);
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            mainInterface.addOption(count,"Return",null);
+            TableInterface table = createTableFromDatabase(portId);
+            System.out.println(table);
+
+            HashMap<String, String> interfaceData = mainInterface.run(null);
+            String option = interfaceData.get("option");
+
+            if(option.equals("Return")){
+                break;
+            }
+
+            OptionsInterface updateInterface = new OptionsInterface("update","What update for the container " + option + " ?",2);
+            updateInterface.addOption(1,"Id",null);
+            updateInterface.addOption(2,"Weight",null);
+            updateInterface.addOption(3,"Type",null);
+            updateInterface.addOption(4,"Port Id",null);
+            updateInterface.addOption(5,"Return",null);
+
+            Scanner input = new Scanner(System.in);
+
+            interfaceData = updateInterface.run(null);
+
+            switch (interfaceData.get("option")){
+                case "Id":{
+                    while (true){
+                        System.out.println("Enter Id(c-00): ");
+
+                        String inputResult = input.nextLine();
+
+                        if(inputResult.matches("^c-\\d+$")){
+                            for (String line : lines) {
+                                String[] parts = line.split(",");
+
+                                if(parts[0].equals(option)){
+                                    parts[0] = inputResult;
+
+                                    String newLine = String.join(",", parts);
+
+                                    boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
+
+                                    if(success){
+                                        System.out.println("Update container successfully!");
+                                        break;
+                                    }else{
+                                        System.out.println("Failed to update container!");
+                                        break;
+                                    }
+                                }
+                            }
+
+                            break;
+                        }else{
+                            System.out.println("Id must follow format: c-00");
+                        }
+                    }
+                    break;
+                }
+                case "Weight":{
+                    while (true){
+                        System.out.println("Enter weight(ex: 5.9)Kg: ");
+
+                        String inputResult = input.nextLine();
+
+                        if(inputResult.matches("\\d+.\\d+")){
+                            for (String line : lines) {
+                                String[] parts = line.split(",");
+
+                                if(parts[0].equals(option)){
+                                    parts[1] = inputResult;
+
+                                    String newLine = String.join(",", parts);
+
+                                    boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
+
+                                    if(success){
+                                        System.out.println("Update container successfully!");
+                                        break;
+                                    }else{
+                                        System.out.println("Failed to update container!");
+                                        break;
+                                    }
+                                }
+                            }
+
+                            break;
+                        }else{
+                            System.out.println("Weight must follow format: 0.0");
+                        }
+                    }
+                    break;
+                }
+                case "Type":{
+                    OptionsInterface questionInterface = new OptionsInterface("askQuestion", "What type of this container?", 2);
+                    questionInterface.addOption(1,"Dry Storage",null);
+                    questionInterface.addOption(2,"Refrigerated",null);
+                    questionInterface.addOption(3,"Open Top",null);
+                    questionInterface.addOption(4,"liquid",null);
+                    questionInterface.addOption(5,"Open Side",null);
+
+                    interfaceData = questionInterface.run(null);
+
+                    String type = interfaceData.get("option");
+
+                    for (String line : lines) {
+                        String[] parts = line.split(",");
+
+                        if(parts[0].equals(option)){
+                            parts[2] = type;
+
+                            String newLine = String.join(",", parts);
+
+                            boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
+
+                            if(success){
+                                System.out.println("Update container successfully!");
+                                break;
+                            }else{
+                                System.out.println("Failed to update container!");
+                                break;
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                case "Port Id":{
+                    while (true){
+                        System.out.println("Enter port id(p-00): ");
+
+                        String inputResult = input.nextLine();
+
+                        if(inputResult.matches("^p-\\d+$")){
+                            for (String line : lines) {
+                                String[] parts = line.split(",");
+
+                                if(parts[0].equals(option)){
+                                    parts[3] = inputResult;
+
+                                    String newLine = String.join(",",parts);
+
+                                    boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
+
+                                    if(success){
+                                        System.out.println("Update container successfully!");
+                                        break;
+                                    }else{
+                                        System.out.println("Failed to update container!");
+                                        break;
+                                    }
+                                }
+                            }
+
+                            break;
+                        }else{
+                            System.out.println("Port id must follow format: p-00");
+                        }
+                    }
+                    break;
+                }
+                case "Return":{
+                    keepRunning = false;
+                    break;
+                }
+            }
+        }
+
         // Create a menu
         // Run while loop with Scanner to add container id as option
         // Run menu and get container id
@@ -87,12 +291,49 @@ public class PMContainer {
         // Edit the container with new line data
         //PortManagerMenu.updateLinesWithId();
     }
-    public static void deleteContainerFromDatabase(){
+    public static void deleteContainerFromDatabase() {
         // Create a menu
         // Run while loop with Scanner to add container id as option
         // Run menu and get containerId
         // Use function to delete container
         //PortManagerMenu.deleteLinesWithId()
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Delete Container Menu:");
+            System.out.println("1. Add Container ID to Delete");
+            System.out.println("2. Exit");
+            System.out.print("Choose an option: ");
+            int menuChoice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            if (menuChoice == 1) {
+                // Ask the user to enter the container ID to delete
+                System.out.print("Enter the container ID to delete: ");
+                String containerIdToDelete = scanner.nextLine();
+
+                // Validate the container ID using a pattern
+                Pattern idPattern = Pattern.compile("^c-\\d+$");
+                if (!idPattern.matcher(containerIdToDelete).matches()) {
+                    System.out.println("Invalid container ID format. Please use 'c-<digits>'.");
+                    continue;
+                }
+
+                // Use function to delete the container
+                boolean deleted = PortManagerMenu.deleteLinesWithId(containersFilePath, containerIdToDelete);
+
+                if (deleted) {
+                    System.out.println("Container with ID " + containerIdToDelete + " deleted successfully.");
+                } else {
+                    System.out.println("Container with ID " + containerIdToDelete + " not found.");
+                }
+            } else if (menuChoice == 2) {
+                // Exit the delete container menu
+                break;
+            } else {
+                System.out.println("Invalid menu choice. Please choose again.");
+            }
+        }
     }
     public static TableInterface createTableFromDatabase(String id){
         Scanner fileData;
@@ -131,7 +372,9 @@ public class PMContainer {
 
         return table;
     }
-
+    public static void loadContainerOnVehicle(){
+        //
+    }
     //get Data for this container
     private void getContainerData(){
         Scanner fileData;

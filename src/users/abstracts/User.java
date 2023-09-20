@@ -11,6 +11,10 @@ public abstract class User {
         this.type = type;
     }
 
+    public void showProfile(){
+        System.out.println("Username: " + username);
+        System.out.println("Password: " +  password);
+    }
     public String getUsername() {
         return username;
     }

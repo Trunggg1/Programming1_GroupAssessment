@@ -1,6 +1,7 @@
 package Port;
 
 import Containers.PMContainer;
+import Trip.PMTrip;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
@@ -86,57 +87,29 @@ public class PMPort {
     }
     private void updatePort(){
         OptionsInterface updateInterface = new OptionsInterface("update","What do you want to update for the port?",2);
-        updateInterface.addOption(1,"Id",null);
-        updateInterface.addOption(2,"Name",null);
-        updateInterface.addOption(3,"Capacity",null);
-        updateInterface.addOption(4,"Landing Ability",null);
-        updateInterface.addOption(5,"Return",null);
+        updateInterface.addOption(1,"Name",null);
+        updateInterface.addOption(2,"Capacity",null);
+        updateInterface.addOption(3,"Landing Ability",null);
+        updateInterface.addOption(4,"Return",null);
 
         Scanner input = new Scanner(System.in);
 
         boolean keepRunning = true;
 
         while (keepRunning){
+            System.out.println("Current port: " + this);
             HashMap<String, String> interfaceData = updateInterface.run(null);
 
             String option = interfaceData.get("option");
 
             switch (option){
-                case "Id":{
-                    while (true){
-                        System.out.print("Enter Id: ");
-                        String inputResult = input.next();
-
-                        if(inputResult.matches("^p-\\d++$")){
-                            String oldId = this.id;
-                            this.id = inputResult;
-
-                            boolean success = updateLinesWithId(portsFilePath, oldId, toString());
-                            if(success){
-                               System.out.println("Updated port successfully!");
-                            }else{
-                                System.out.println("Failed to update port!");
-                            }
-
-                            break;
-                        }else{
-                            System.out.println("Id must follow this format: p-00");
-                        }
-                    }
-
-                    break;
-                }
                 case "Name":{
                     while (true){
-                        System.out.println("Enter Name: ");
+                        System.out.println("Enter name: ");
 
-                        String inputResult = input.next();
+                        this.name = input.nextLine();
 
-                        this.name = inputResult;
-
-                        String line = toString();
-
-                        boolean success = updateLinesWithId(portsFilePath, id, line);
+                        boolean success = updateLinesWithId(portsFilePath, id, toString());
                         if(success){
                             System.out.println("Updated port successfully!");
                         }else{
@@ -149,15 +122,12 @@ public class PMPort {
                 }
                 case "Capacity":{
                     while (true){
-                        System.out.println("Enter Capacity: ");
+                        System.out.println("Enter Capacity(ex: 1000Kg): ");
 
-                        String inputResult = input.next();
+                        this.capacity = input.nextLine();
 
-                        this.capacity = inputResult;
+                        boolean success = updateLinesWithId(portsFilePath, id, toString());
 
-                        String line = toString();
-
-                        boolean success = updateLinesWithId(portsFilePath, id, line);
                         if(success){
                             System.out.println("Updated port successfully!");
                         }else{
@@ -170,15 +140,18 @@ public class PMPort {
                 }
                 case "Landing Ability":{
                     while (true){
-                        System.out.println("Enter landing ability: ");
+                        OptionsInterface questionInterface = new OptionsInterface("askQuestion","Which landing ability does this port have?",4);
+                        questionInterface.addOption(1,"Truck Availability",null);
+                        questionInterface.addOption(2,"Unavailability", null);
 
-                        String inputResult = input.next();
+                        interfaceData = questionInterface.run(null);
 
-                        this.landingAbility = inputResult;
+                        this.landingAbility = interfaceData.get("option");
 
                         String line = toString();
 
                         boolean success = updateLinesWithId(portsFilePath, id, line);
+
                         if(success){
                             System.out.println("Updated port successfully!");
                         }else{
@@ -210,7 +183,7 @@ public class PMPort {
                 while (true){
                     updatePort();
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -226,7 +199,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -249,7 +222,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -265,7 +238,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -285,7 +258,7 @@ public class PMPort {
                    PMContainer.addContainerToDatabase(id);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -295,9 +268,43 @@ public class PMPort {
                 break;
             }
             case "Update a container from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    OptionsInterface questionInterface = new OptionsInterface("askQuestion", "Display containers inside port only?", 2);
+                    questionInterface.addOption(1,"Yes", null);
+                    questionInterface.addOption(2,"No", null);
+
+                    HashMap<String, String> interfaceData = questionInterface.run(null);
+
+                    if(interfaceData.get("option").equals("Yes")){
+                        PMContainer.updateContainerFromDatabase(id);
+                    }else{
+                        PMContainer.updateContainerFromDatabase(null);
+                    }
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.nextLine();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
             case "Delete a container from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    PMContainer.deleteContainerFromDatabase();
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.nextLine();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
             case "Display all containers from the port": {
@@ -308,7 +315,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -325,7 +332,7 @@ public class PMPort {
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
-                    String inputResult = input.next();
+                    String inputResult = input.nextLine();
 
                     if(inputResult.equals("Y") || inputResult.equals("y")){
                         break;
@@ -339,18 +346,22 @@ public class PMPort {
     public void handleTripsOptions(String option) {
         switch (option){
             case "Add a trip to database": {
-                Scanner input = new Scanner(System.in);
+                PMTrip.addTripToDatabase();
                 break;
             }
             case "Update a trip from database": {
+                PMTrip.updateTripToDatabase();
                 break;
             }case "Delete a trip from database": {
+                PMTrip.deleteTripToDatabase();
                 break;
             }
             case "Display all trips from the port": {
+                PMTrip.displayAllTripsFromDatabase(id);
                 break;
             }
             case "Display trips from database": {
+                PMTrip.displayAllTripsFromDatabase(null);
                 break;
             }
         }

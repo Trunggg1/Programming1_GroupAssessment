@@ -114,7 +114,7 @@ public class OptionsInterface extends Interface {
             }
             System.out.print("Input: ");
 
-            String inputResult = input.next();
+            String inputResult = input.nextLine();
 
             if(options.containsKey(inputResult)){
                 String textOption = options.get(inputResult);
