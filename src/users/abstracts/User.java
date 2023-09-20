@@ -59,6 +59,4 @@ public abstract class User {
     public void setType(String type) {
         this.type = type;
     }
-
-
 }

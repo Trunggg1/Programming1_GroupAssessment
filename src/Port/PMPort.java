@@ -213,6 +213,7 @@ public class PMPort {
     public void handleVehicleOptions(String option) {
         switch (option){
             case "Update a vehicle from the port": {
+                PMVehicle.updateVehiclesFromDatabase(name);
                 break;
              }
             case "Display all vehicles from the port": {
