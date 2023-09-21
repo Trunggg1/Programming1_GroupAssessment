@@ -1,5 +1,5 @@
 #ID, Name, Capacity, Landing Ability
-p-01, District, 100000kg, Truck Available
+p-01, District 8,  100000kg,  Truck Available
 p-02,District 7,100000kg,Truck Available
 p-03,Vung Tau,100000kg, UnAvailable
 p-04,Phan Thiet,100000kg,Truck Available

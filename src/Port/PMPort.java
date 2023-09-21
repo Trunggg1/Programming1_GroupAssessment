@@ -91,7 +91,7 @@ public class PMPort {
 
         boolean keepRunning = true;
         while (keepRunning){
-            System.out.println("Current port: " + this);
+            System.out.println("Current port: " + toString());
             HashMap<String, String> interfaceData = updateInterface.run(null);
 
             String option = interfaceData.get("option");
@@ -113,7 +113,7 @@ public class PMPort {
                     break;
                 }
                 case "Capacity":{
-                    System.out.println("Enter Capacity(ex: 1000Kg): ");
+                    System.out.println("Enter Capacity(Example: 1000Kg): ");
 
                     this.capacity = input.nextLine();
 
@@ -156,7 +156,6 @@ public class PMPort {
             }
         }
     }
-
     public void handlePortOptions(String option){
         switch (option){
             case "Update the port": {

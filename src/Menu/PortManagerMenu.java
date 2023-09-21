@@ -14,7 +14,8 @@ public class PortManagerMenu {
     private PMPort port;
     private OptionsInterface mainInterface;
     public PortManagerMenu() {}
-    public static ArrayList<String> getLinesFromDatabase(String filePath){
+
+    public static ArrayList<String> getLinesFromDatabaseById(String filePath, String id, int index){
         try{
             File file = new File(filePath);
 
@@ -24,11 +25,38 @@ public class PortManagerMenu {
 
             String fileLine;
             while ((fileLine = reader.readLine()) != null){
-               lines.add(fileLine);
+                String[] parts = fileLine.split(",");
+                String trimmedId = parts[index].trim();
+
+                if(trimmedId.equals(id)){
+                    lines.add(fileLine);
+                }
             }
 
             return lines;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Failed to find " + filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static ArrayList<String> getLinesFromDatabase(String filePath){
+        try{
+            File file = new File(filePath);
 
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            ArrayList<String> lines = new ArrayList<>();
+
+            String fileLine;
+
+            String header = reader.readLine();
+
+            while ((fileLine = reader.readLine()) != null){
+                    lines.add(fileLine);
+            }
+
+            return lines;
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Failed to find " + filePath);
         } catch (IOException e) {

@@ -5,16 +5,13 @@ import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 public class PMContainer {
-    public static final String[] containersCols = {"id","weight","type","portId"};
+    public static final String[] containersCols = {"ID","Weight","Type","Port ID", "Vehicle ID"};
     public static final String containersFilePath = "./src/database/containers.txt";
     private String id;
     private Double weight;
@@ -150,146 +147,121 @@ public class PMContainer {
         boolean keepRunning = true;
 
         while (keepRunning){
-            Scanner fileData;
-            OptionsInterface mainInterface = new OptionsInterface("askQuestion","Which container you want to update?", 5);
+            TableInterface table = createTableFromDatabase(portId);
+            OptionsInterface containersInterface = new OptionsInterface("askQuestion","Which container you want to update?", 5);
 
-            int count = 1;
+           ArrayList<String> lines;
 
-            try{
-                fileData = new Scanner(new File(containersFilePath));
-            }catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+            if(portId!=null){
+                lines = PortManagerMenu.getLinesFromDatabaseById(containersFilePath,portId,3);
+            }else{
+                lines = PortManagerMenu.getLinesFromDatabase(containersFilePath);
             }
 
-            ArrayList<String> lines = new ArrayList<String>();
+            for(int i = 0; i < lines.size(); i++){
+                String line = lines.get(i);
+                String[] parts = line.split(",");
 
-            if(fileData!= null){
-                while (fileData.hasNext()){
-                    String line = fileData.nextLine();
-                    String[] parts = line.split(",");
+                containersInterface.addOption(i + 1,parts[0],null);
 
-                    if(parts[0].matches("^c-\\d+$")){
-                        if(portId != null){
-                            if(parts[3].trim().equals(portId)){
-                                mainInterface.addOption(count,parts[0],null);
-                                lines.add(line);
-                                count++;
-                            }
-                        }
-                        else{
-                            mainInterface.addOption(count,parts[0],null);
-                            lines.add(line);
-                            count++;
-                        }
-                    }
+                if(i == lines.size() - 1){
+                    containersInterface.addOption(i + 1,parts[0],null);
+                    containersInterface.addOption(i + 2,"Return",null);
                 }
             }
 
-            mainInterface.addOption(count,"Return",null);
-            TableInterface table = createTableFromDatabase(portId);
             System.out.println(table);
 
-            HashMap<String, String> interfaceData = mainInterface.run(null);
+            HashMap<String, String> interfaceData = containersInterface.run(null);
             String option = interfaceData.get("option");
 
-            if(option.equals("Return")){
-                break;
+            String containerLine = "";
+
+            for(String line: lines){
+                String[] parts = line.split(",");
+
+                if(parts[0].equals(option)){
+                    containerLine = line;
+                    break;
+                }
             }
 
-            OptionsInterface updateInterface = new OptionsInterface("update","What update for the container " + option + " ?",2);
-            updateInterface.addOption(1,"Id",null);
-            updateInterface.addOption(2,"Weight",null);
-            updateInterface.addOption(3,"Type",null);
-            updateInterface.addOption(4,"Port Id",null);
-            updateInterface.addOption(5,"Return",null);
+            if(!option.equals("Return")){
 
-            Scanner input = new Scanner(System.in);
+                OptionsInterface updateInterface = new OptionsInterface("update","What update for the container " + option + " ?",4);
+                updateInterface.addOption(1,"ID",null);
+                updateInterface.addOption(2,"Weight",null);
+                updateInterface.addOption(3,"Type",null);
+                updateInterface.addOption(4,"Port ID",null);
+                updateInterface.addOption(5,"Return",null);
 
-            interfaceData = updateInterface.run(null);
+                Scanner input = new Scanner(System.in);
+                interfaceData = updateInterface.run(null);
 
-            switch (interfaceData.get("option")){
-                case "Id":{
-                    while (true){
-                        System.out.println("Enter Id(c-00): ");
+                switch (interfaceData.get("option")){
+                    case "ID":{
+                        while (true){
+                            System.out.println("Enter ID(c-00): ");
 
-                        String inputResult = input.nextLine();
+                            String inputResult = input.nextLine();
 
-                        if(inputResult.matches("^c-\\d+$")){
-                            for (String line : lines) {
-                                String[] parts = line.split(",");
+                            if(inputResult.matches("^c-\\d+$")){
+                                String[] parts = containerLine.split(",");
+                                parts[0] = inputResult;
+                                String newLine = String.join(",", parts);
 
-                                if(parts[0].equals(option)){
-                                    parts[0] = inputResult;
+                                boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
 
-                                    String newLine = String.join(",", parts);
-
-                                    boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
-
-                                    if(success){
-                                        System.out.println("Update container successfully!");
-                                        break;
-                                    }else{
-                                        System.out.println("Failed to update container!");
-                                        break;
-                                    }
+                                if(success){
+                                    System.out.println("Update container successfully!");
+                                    break;
+                                }else{
+                                    System.out.println("Failed to update container!");
                                 }
+                            }else{
+                                System.out.println("Id must follow format: c-00");
                             }
-
-                            break;
-                        }else{
-                            System.out.println("Id must follow format: c-00");
                         }
+                        break;
                     }
-                    break;
-                }
-                case "Weight":{
-                    while (true){
-                        System.out.println("Enter weight(ex: 5.9)Kg: ");
+                    case "Weight":{
+                        while (true){
+                            System.out.println("Enter weight(ex: 5.9)Kg: ");
 
-                        String inputResult = input.nextLine();
+                            String inputResult = input.nextLine();
 
-                        if(inputResult.matches("\\d+.\\d+")){
-                            for (String line : lines) {
-                                String[] parts = line.split(",");
+                            if(inputResult.matches("\\d+.\\d+")){
+                                String[] parts = containerLine.split(",");
+                                parts[1] = inputResult;
+                                String newLine = String.join(",", parts);
 
-                                if(parts[0].equals(option)){
-                                    parts[1] = inputResult;
+                                boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
 
-                                    String newLine = String.join(",", parts);
-
-                                    boolean success = PortManagerMenu.updateLinesWithId(containersFilePath, option, newLine);
-
-                                    if(success){
-                                        System.out.println("Update container successfully!");
-                                        break;
-                                    }else{
-                                        System.out.println("Failed to update container!");
-                                        break;
-                                    }
+                                if(success){
+                                    System.out.println("Update container successfully!");
+                                    break;
+                                }else{
+                                    System.out.println("Failed to update container!");
                                 }
+                            }else{
+                                System.out.println("Weight must follow format: 0.0");
                             }
-
-                            break;
-                        }else{
-                            System.out.println("Weight must follow format: 0.0");
                         }
+                        break;
                     }
-                    break;
-                }
-                case "Type":{
-                    OptionsInterface questionInterface = new OptionsInterface("askQuestion", "What type of this container?", 2);
-                    questionInterface.addOption(1,"Dry Storage",null);
-                    questionInterface.addOption(2,"Refrigerated",null);
-                    questionInterface.addOption(3,"Open Top",null);
-                    questionInterface.addOption(4,"liquid",null);
-                    questionInterface.addOption(5,"Open Side",null);
+                    case "Type":{
+                        OptionsInterface questionInterface = new OptionsInterface("askQuestion", "What type of this container?", 2);
+                        questionInterface.addOption(1,"Dry Storage",null);
+                        questionInterface.addOption(2,"Refrigerated",null);
+                        questionInterface.addOption(3,"Open Top",null);
+                        questionInterface.addOption(4,"liquid",null);
+                        questionInterface.addOption(5,"Open Side",null);
 
-                    interfaceData = questionInterface.run(null);
+                        interfaceData = questionInterface.run(null);
 
-                    String type = interfaceData.get("option");
+                        String type = interfaceData.get("option");
 
-                    for (String line : lines) {
-                        String[] parts = line.split(",");
+                        String[] parts = containerLine.split(",");
 
                         if(parts[0].equals(option)){
                             parts[2] = type;
@@ -303,22 +275,18 @@ public class PMContainer {
                                 break;
                             }else{
                                 System.out.println("Failed to update container!");
-                                break;
                             }
                         }
+                        break;
                     }
+                    case "Port ID":{
+                        while (true){
+                            System.out.println("Enter port id(p-00): ");
 
-                    break;
-                }
-                case "Port Id":{
-                    while (true){
-                        System.out.println("Enter port id(p-00): ");
+                            String inputResult = input.nextLine();
 
-                        String inputResult = input.nextLine();
-
-                        if(inputResult.matches("^p-\\d+$")){
-                            for (String line : lines) {
-                                String[] parts = line.split(",");
+                            if(inputResult.matches("^p-\\d+$")){
+                                String[] parts = containerLine.split(",");
 
                                 if(parts[0].equals(option)){
                                     parts[3] = inputResult;
@@ -332,33 +300,26 @@ public class PMContainer {
                                         break;
                                     }else{
                                         System.out.println("Failed to update container!");
-                                        break;
                                     }
                                 }
+
+                                break;
+                            }else{
+                                System.out.println("Port id must follow format: p-00");
                             }
-
-                            break;
-                        }else{
-                            System.out.println("Port id must follow format: p-00");
                         }
+                        break;
                     }
-                    break;
+                    case "Return":{
+                        keepRunning = false;
+                        break;
+                    }
                 }
-                case "Return":{
-                    keepRunning = false;
-                    break;
-                }
+            }else{
+                keepRunning = false;
             }
-        }
 
-        // Create a menu
-        // Run while loop with Scanner to add container id as option
-        // Run menu and get container id
-        // Create a menu with options to choose which part to edit(id, name, portId, etc.)
-        // Run while loop
-        // Run menu and get the edit option
-        // Edit the container with new line data
-        //PortManagerMenu.updateLinesWithId();
+        }
     }
     public PMContainer(String cNumber, double weight, String containerType, String portId) {
         this.id = cNumber;
