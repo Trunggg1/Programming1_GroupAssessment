@@ -1,9 +1,7 @@
-#id, weight, type, portId
-c-01, 1.5,Dry Storage,p-01
-c-02, 3.2,Refrigerated,null
-c-03, 4.6,Open Top, null
-c-04, 4.3,liquid, null
-c-05, 2.5,Open Side, null
-c-06,5.2,Refrigerated, p-01
-c-020, 5.5, Open Top, p-01
-c-023, 5.6, liquid, p-01
+#id, weight, type, portId, vehicleId
+c-01, 1.5, dryStorage, p-01, null
+c-02, 3.2, refrigerated,null, null
+c-03, 4.6, openTop, null,null, null
+c-04, 4.3, liquid, null, null, null
+c-05, 2.5, openSide, null, null, null
+c-101, 5.6, Dry Storage, p-01, null, null
