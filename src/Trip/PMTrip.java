@@ -1,22 +1,92 @@
 package Trip;
 
 import Menu.PortManagerMenu;
+import Port.PMPort;
+import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Scanner;
+enum TripStatus{
+    LANDED, MOVING
+}
 
 public class PMTrip {
-    private static final String portsFilePath = "./src/database/trips.txt";
-    public static void addTripToDatabase(){
+    public static final String tripsFilePath = "./src/database/tripsTri.txt";
+    public static void createATrip(PMPort port){
+        PromptsInterface questionInterface = new PromptsInterface("askQuestion","Ports input");
+        questionInterface.addPrompt("Enter departure port: ");
+        questionInterface.addPrompt("Enter arrival port: ");
+
+        TableInterface table = PMPort.createTableFromDatabase();
+
+        System.out.println(table);
+
+        HashMap<Number, String> results = questionInterface.startPrompts();
+        questionInterface.clearPrompt();
+
+        String departurePort = results.get(1);
+        String arrivalPort = results.get(2);
+        if(PortManagerMenu.lineHasId(PMPort.portsFilePath,departurePort)
+                && PortManagerMenu.lineHasId(PMPort.portsFilePath,arrivalPort)){
+
+            OptionsInterface vehiclesMenu = new OptionsInterface("vehiclesMenu", "Choose a vehicle to add on a trip", 4);
+
+            table = PMVehicle.createTableFromDatabase(port.getId());
+            System.out.println(table);
+
+
+
+        };
         // Display menu need input 2 ports, vehicle
         // check if vehicle has atleast 1 container, fuel
         // check ports landing, capacity
         // add Trip to database
         //PortManagerMenu.addLineToDatabase(path,line);
     }
+    public static TableInterface createTableFromDatabase(String portName) {
+        Scanner fileData;
+
+        try{
+            fileData = new Scanner(new File(tripsFilePath));
+        }catch (Exception e){
+            fileData = null;
+        }
+
+        String[] containersCols = {"Id","Date Depart","Date Arrived","Depart Port","Arrived Port","Status"};
+        TableInterface table = new TableInterface("trips","Trips",containersCols,",");
+
+        int count = 1;
+        if(fileData!= null){
+            while (fileData.hasNext()){
+                String line = fileData.nextLine();
+                String[] parts = line.split(",");
+
+                if(count != 1){
+                    if(portName!= null){
+                        String name = parts[3].trim();
+                        String trimmedId = name.trim();
+
+                        if(trimmedId.equals(portName)){
+                            table.addRow(line);
+                        }
+                    }else{
+                        System.out.println(line);
+                        table.addRow(line);
+                    }
+                }
+
+                count++;
+            }
+        }
+
+        return table;
+    }
     public static void completeTrip(){
+
         //Collect all trips from database that has status on going and load as a table
         //Display menu and ask to choose a option
         //vehicleId, portsId
@@ -27,7 +97,8 @@ public class PMTrip {
         //Trip status set to success
         //7d
     }
-    public static void updateTripToDatabase(){
+    public static void updateTripFromPort(){
+
     }
     public static void deleteTripToDatabase(){
         //Collect all trips from database that has status on going and load as a table
@@ -84,4 +155,6 @@ public class PMTrip {
             }
         }
     }
+
+
 }

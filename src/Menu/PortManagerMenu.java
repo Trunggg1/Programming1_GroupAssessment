@@ -220,12 +220,12 @@ public class PortManagerMenu {
         portPanel.addOption(2,"Display all ports from database", null);
         portPanel.addOption(3,"Go back", null);
 
-        OptionsInterface tripsPanel = new OptionsInterface("tripPanel","Trip Panel",3);
-        tripsPanel.addOption(1,"Add a trip to database", null);
+        OptionsInterface tripsPanel = new OptionsInterface("tripsPanel","Trips Panel",3);
+        tripsPanel.addOption(1,"Create a trip", null);
         tripsPanel.addOption(2,"Update a trip from database", null);
         tripsPanel.addOption(3,"Delete a trip from database", null);
         tripsPanel.addOption(4,"Display all trips from the port", null);
-        tripsPanel.addOption(5,"Display trips from database", null);
+        tripsPanel.addOption(5,"Display all trips from database", null);
         tripsPanel.addOption(6,"Go back", null);
 
         OptionsInterface statisticPanel = new OptionsInterface("statisticPanel","Statistic Panel",4);

@@ -1,6 +1,7 @@
 package Port;
 
 import Container.PMContainer;
+import Trip.PMTrip;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
@@ -13,7 +14,7 @@ import java.util.StringTokenizer;
 import static Menu.PortManagerMenu.updateLinesWithId;
 
 public class PMPort {
-    private static final String portsFilePath = "./src/database/ports.txt";
+    public static final String portsFilePath = "./src/database/ports.txt";
     private String id;
     private String name;
     private String capacity;
@@ -51,6 +52,10 @@ public class PMPort {
     public PMPort(String id) {
         this.id = id.trim();
         getPortData();
+    }
+
+    public String getId() {
+        return id;
     }
     public static TableInterface createTableFromDatabase(){
         Scanner fileData;
@@ -294,9 +299,11 @@ public class PMPort {
                 break;
             }
             case "Update a container from database": {
+                PMContainer.updateContainerFromDatabase();
                 break;
             }
             case "Delete a container from database": {
+                PMContainer.deleteContainerFromDatabase();
                 break;
             }
             case "Display all containers from the port": {
@@ -337,7 +344,7 @@ public class PMPort {
     }
     public void handleTripsOptions(String option) {
         switch (option){
-            case "Add a trip to database": {
+            case "Create a trip": {
                 Scanner input = new Scanner(System.in);
                 break;
             }
@@ -347,9 +354,37 @@ public class PMPort {
                 break;
             }
             case "Display all trips from the port": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = PMTrip.createTableFromDatabase(name);
+                    System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
+
                 break;
             }
-            case "Display trips from database": {
+            case "Display all trips from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    TableInterface table = PMTrip.createTableFromDatabase(null);
+                    System.out.println(table);
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
+
                 break;
             }
         }
