@@ -12,12 +12,20 @@ public class OptionsInterface extends Interface {
     private String name;
     private int width = 2;
     private HashMap<String, String> options = new HashMap<>();
+
+    public void setName(String name) {
+        this.name = name;
+    }
     public OptionsInterface(String id, String name, int width) {
         this.id = id;
         this.name = name;
         this.width = width;
     }
-   public void addOption(int number, String description, OptionsInterface childInterface){
+    public void clearOptions(){
+        this.options.clear();
+        this.childOptionsInterface.clear();
+    }
+    public void addOption(int number, String description, OptionsInterface childInterface){
         options.put(String.valueOf(number), description);
         childOptionsInterface.put(String.valueOf(number), childInterface);
     }
@@ -93,14 +101,16 @@ public class OptionsInterface extends Interface {
             for (Map.Entry<String, OptionsInterface> entry : childOptionsInterface.entrySet()) {
                 OptionsInterface childInterface = entry.getValue();
 
-                if(childInterface.getId().equals(interfaceId)){
-                    HashMap<String, String> result = childInterface.run(null);
+                if(childInterface!= null){
+                    if(childInterface.getId().equals(interfaceId)){
+                        HashMap<String, String> result = childInterface.run(null);
 
-                    if(result != null){
-                        return  result;
+                        if(result != null){
+                            return  result;
+                        }
+
+                        break;
                     }
-
-                    break;
                 }
             }
         }

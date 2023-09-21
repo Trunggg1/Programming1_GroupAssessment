@@ -1,10 +1,10 @@
 package User.abstracts;
 
 public abstract class User {
+    public static final String usersFilePath = "./src/database/portManagers.txt";
     private String type;
     private String username;
     private String password;
-
 
     public User(String username, String password, String type) {
         this.username = username;

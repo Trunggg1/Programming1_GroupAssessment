@@ -1,26 +1,45 @@
 package Menu;
 
 import Port.PMPort;
-import Resource.ReadDatabase;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import User.PortManager;
 
 import java.io.*;
+import java.text.ParseException;
 import java.util.*;
 
 public class PortManagerMenu {
     private PortManager user;
     private PMPort port;
     private OptionsInterface mainInterface;
-
     public PortManagerMenu() {}
-    public static boolean lineHasId(String filePath, String id){
+    public static ArrayList<String> getLinesFromDatabase(String filePath){
+        try{
+            File file = new File(filePath);
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            ArrayList<String> lines = new ArrayList<>();
+
+            String fileLine;
+            while ((fileLine = reader.readLine()) != null){
+               lines.add(fileLine);
+            }
+
+            return lines;
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Failed to find " + filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static boolean checkLineHasId(String filePath, String id){
         try {
             File file = new File(filePath);
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            StringBuilder content = new StringBuilder();
 
             String fileLine;
 
@@ -86,9 +105,8 @@ public class PortManagerMenu {
 
                 // Check if the id in the current line matches the target id
                 String currentId = parts[0];
-                if (currentId.equals(id)) {
-                    //Do nothing
-                } else {
+
+                if (!currentId.equals(id)) {
                     content.append(fileLine).append("\n");
                 }
             }
@@ -130,52 +148,42 @@ public class PortManagerMenu {
         if(option.equals("Log in")){
             PromptsInterface promptInterface = new PromptsInterface("portManagerLogin","Login for port manager");
 
-            promptInterface.addPrompt("Enter username");
-            promptInterface.addPrompt("Enter password");
+            promptInterface.addPrompt("Enter Username");
+            promptInterface.addPrompt("Enter Password");
 
-            boolean keepRunning = true;
-
-            while (keepRunning){
+            while (true){
                 //Begin to ask question
                 HashMap<Number, String> value = promptInterface.startPrompts();
 
                 //Get data from input
-                String username = value.get(1);
-                String password = value.get(2);
+                String usernameInput = value.get(1).trim();
+                String passwordInput = value.get(2).trim();
 
-                Scanner fileData;
-                try{
-                    fileData = new Scanner(new File("./src/database/portManagers.txt"));
-                }catch (Exception e){
-                    fileData = null;
-                }
+                ArrayList<String> lines = getLinesFromDatabase(PortManager.usersFilePath);
 
                 boolean userFound = false;
 
-                String usernameField;
-                String passwordField;
-                String portIdField = null;
+                String portId = null;
 
-                if(fileData!= null){
-                    while (fileData.hasNext()){
-                        String line = fileData.nextLine();
-                        StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
+                for(String line: lines){
+                    String[] parts = line.split(",");
 
-                        usernameField = stringTokenizer.nextToken().trim();
-                        passwordField = stringTokenizer.nextToken().trim();
-                        portIdField = stringTokenizer.nextToken().trim();
+                    String trimmedUsername = parts[0].trim();
+                    String trimmedPassword = parts[1].trim();
 
-                        if(usernameField.equals(username) && passwordField.equals(password)){
-                            userFound = true;
-                            break;
-                        }
+                    System.out.println(trimmedUsername + ": " + trimmedPassword);
+                    if(trimmedUsername.equals(usernameInput) && trimmedPassword.equals(passwordInput)){
+                        userFound = true;
+                        portId = parts[2];
+                        break;
                     }
                 }
 
                 if(userFound){
-                    this.user = new PortManager(username,password);
-                    this.port = new PMPort(portIdField);
-                    keepRunning = false;
+                    this.user = new PortManager(usernameInput,passwordInput);
+                    this.port = new PMPort(portId);
+
+                    break;
                 }else{
                     System.out.println("Username or Password is incorrect!");
                 }
@@ -187,18 +195,16 @@ public class PortManagerMenu {
             try{
                 Authentication authentication = new Authentication();
                 authentication.mainMenu();
-            }catch (Exception e){
-                System.out.println(e);
+            } catch (IOException | ParseException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
-
     public void setup(){
         OptionsInterface profilePanel = new OptionsInterface("profilePanel","Profile Panel", 2);
         profilePanel.addOption(1,"Change username",null);
         profilePanel.addOption(2,"Change password", null);
-        profilePanel.addOption(3,"Log out", null);
-        profilePanel.addOption(4,"Go back", null);
+        profilePanel.addOption(3,"Go back", null);
 
         OptionsInterface vehiclesPanel = new OptionsInterface("vehiclesPanel","Vehicles Panel",2);
         vehiclesPanel.addOption(1,"Update a vehicle from the port", null);
@@ -214,7 +220,6 @@ public class PortManagerMenu {
         containersPanel.addOption(5,"Display all containers from database", null);
         containersPanel.addOption(6,"Go back", null);
 
-        //Port Panel
         OptionsInterface portPanel = new OptionsInterface("portPanel","Port Panel",3);
         portPanel.addOption(1,"Update the port", null);
         portPanel.addOption(2,"Display all ports from database", null);
@@ -244,6 +249,7 @@ public class PortManagerMenu {
         mainInterface.addOption(4,"Port panel", portPanel);
         mainInterface.addOption(5,"Trips panel", tripsPanel);
         mainInterface.addOption(6,"Statistic", statisticPanel);
+        mainInterface.addOption(7,"Log out", null);
     }
     public void run(){
         String interfaceId = "mainInterface";
@@ -251,37 +257,24 @@ public class PortManagerMenu {
         while (true){
             HashMap<String, String> interfaceData = mainInterface.run(interfaceId);
 
-            interfaceId = "mainInterface";
-
             String id = interfaceData.get("id");
             String option = interfaceData.get("option");
 
-            switch (id) {
-                case "profilePanel" -> {
-                    this.user.handleProfileOptions(option);
-                }
-                case "vehiclesPanel" ->{
-                    this.port.handleVehicleOptions(option);
-                    interfaceId = "vehiclesPanel";
-                }
-                case "portPanel" ->{
-                    this.port.handlePortOptions(option);
-                    interfaceId = "portPanel";
-                }
-                case "containersPanel" ->{
-                    this.port.handleContainerOptions(option);
-                    interfaceId = "containersPanel";
-                }
-                case "tripsPanel" ->{
-                    this.port.handleTripsOptions(option);
-                    interfaceId = "tripsPanel";
-                }
-                case "statisticPanel" ->{
-                    this.port.handleStatisticOptions(option);
-                    interfaceId = "statisticPanel";
-                }
+            if(option.equals("Log out")){
+                viewLogin();
+                break;
             }
 
+            switch (id) {
+                case "profilePanel" -> this.user.handleProfileOptions(option);
+                case "vehiclesPanel" -> this.port.handleVehicleOptions(option);
+                case "portPanel" -> this.port.handlePortOptions(option);
+                case "containersPanel" -> this.port.handleContainerOptions(option);
+                case "tripsPanel" -> this.port.handleTripsOptions(option);
+                case "statisticPanel" -> this.port.handleStatisticOptions(option);
+            }
+
+            interfaceId = id;
         }
     }
 }

@@ -1,4 +1,4 @@
-#ID, Weight, Type, PortId, Vehicle Id
+#ID, Weight, Type, Port ID, Vehicle ID
 c-01, 1.5, dryStorage, p-01, null
 c-02, 3.2, refrigerated,null, null
 c-03, 4.6, openTop, null,null, null

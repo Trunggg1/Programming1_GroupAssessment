@@ -10,11 +10,8 @@ import interfaces.builders.TableInterface;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
-enum TripStatus{
-    LANDED, MOVING
-}
-
 public class PMTrip {
+    public static final String[] cols = {"ID", "Vehicle Id", "Port A", "Port B", "Status", "Date"};
     public static final String tripsFilePath = "./src/database/tripsTri.txt";
     public static void createATrip(PMPort port){
         PromptsInterface questionInterface = new PromptsInterface("askQuestion","Ports input");
@@ -30,8 +27,8 @@ public class PMTrip {
 
         String departurePort = results.get(1);
         String arrivalPort = results.get(2);
-        if(PortManagerMenu.lineHasId(PMPort.portsFilePath,departurePort)
-                && PortManagerMenu.lineHasId(PMPort.portsFilePath,arrivalPort)){
+        if(PortManagerMenu.checkLineHasId(PMPort.portsFilePath,departurePort)
+                && PortManagerMenu.checkLineHasId(PMPort.portsFilePath,arrivalPort)){
 
             OptionsInterface vehiclesMenu = new OptionsInterface("vehiclesMenu", "Choose a vehicle to add on a trip", 4);
 
@@ -122,7 +119,7 @@ public class PMTrip {
         String option = interfaceData.get("option");
 
         //#id , vehicleId, portA, portB, status, date
-        String[] cols = {"Id", "Vehicle Id", "Port A", "Port B", "Status", "Date"};
+
         TableInterface table = new TableInterface("table","Trips",cols,",");
 
         PromptsInterface askQuestion = new PromptsInterface("ask","Ask a question");

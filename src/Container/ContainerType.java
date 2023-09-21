@@ -1,7 +1,4 @@
 package Container;
-
-import Menu.PortManagerMenu;
-
 public enum ContainerType { // Set enum for container type
     DRY_STORAGE("Dry storage"),
     OPEN_TOP("Open top"),
