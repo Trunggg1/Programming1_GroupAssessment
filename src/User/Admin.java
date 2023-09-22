@@ -1,5 +1,6 @@
 package User;
 
+import Container.AdminContainer;
 import Port.AdminPort;
 import Resource.UserInput;
 import Resource.ReadDatabase;
@@ -29,7 +30,7 @@ public class Admin extends Account {
         return username.equals("admin") && hashPassword.equals("751cb3f4aa17c36186f4856c8982bf27");
     }
 
-// ================================================= Port SYSTEM =================================================
+// ================================================= PORT SYSTEM =================================================
     public void addPort() throws IOException, ParseException, InterruptedException {
 
         Scanner scanner = new Scanner(System.in);
@@ -102,7 +103,7 @@ public class Admin extends Account {
         System.out.println("Deletion successful");
     }
 
-// ================================================= Vehicle SYSTEM =================================================
+// ================================================= VEHICLE SYSTEM =================================================
     public void addVehicle() throws IOException, ParseException, InterruptedException {
 
         Scanner scanner = new Scanner(System.in);
@@ -121,11 +122,11 @@ public class Admin extends Account {
 //      Define vehicle type and assign proper id
         String ID;
         if(vehicleType.equalsIgnoreCase("Basic Truck")) {
-            ID = "tr-";
+            ID = "btr-";
         } else if(vehicleType.equalsIgnoreCase("Reefer Truck")) {
-            ID = "tr-";
+            ID = "rtr-";
         } else if(vehicleType.equalsIgnoreCase("Tanker Truck")) {
-            ID = "tr-";
+            ID = "ttr-";
         } else if(vehicleType.equalsIgnoreCase("Ship")) {
             ID = "sh-";
         } else {
@@ -165,7 +166,7 @@ public class Admin extends Account {
         String fuelCapacity = "0";
         boolean validFuelCapacity = false;
         while(!validFuelCapacity) {
-            System.out.println("Enter fuel capacity (e.g: 50%): "); // Ask admin to input the vehicle's Fuel capacity
+            System.out.println("Enter fuel capacity (e.g: 50L): "); // Ask admin to input the vehicle's Fuel capacity
             String fuelCapacityInput  = scanner.nextLine();
             if (!fuelCapacityInput .contains("L")) { //Check if unit measured was input
                 System.out.println("Error: Please include capacity units in L (litters)"); //Display error if measured unit was not input
@@ -189,12 +190,12 @@ public class Admin extends Account {
         vehicle.getVehicleId();
         String choiceOrder = UserInput.rawInput();
 
-        ArrayList<String[]> portList = ReadDatabase.readAllLines("./src/database/vehicles.txt");
+        ArrayList<String[]> vehicleList = ReadDatabase.readAllLines("./src/database/vehicles.txt");
 
         String[] vehicleInfo = new String[3];
-        for (int i = 0; i < portList.size(); i++) {
+        for (int i = 0; i < vehicleList.size(); i++) {
             if (i == Integer.parseInt(choiceOrder)) {
-                vehicleInfo = ReadDatabase.readSpecificLine(portList.get(i)[1], 1, "./src/database/vehicles.txt", ",");
+                vehicleInfo = ReadDatabase.readSpecificLine(vehicleList.get(i)[1], 1, "./src/database/vehicles.txt", ",");
             }
         }
 
@@ -214,6 +215,90 @@ public class Admin extends Account {
         // write new data into database
         for (String[] obj : newDatabase) {
             WriteFile.rewriteFile("./src/database/vehicles.txt", "#ID, Type, Carrying Capacity, Current Fuel, Fuel Capacity, Current Port", String.join(",", obj));
+        }
+        System.out.println("Deletion successful");
+    }
+
+    // ================================================= CONTAINER SYSTEM =================================================
+
+    public void addContainer() throws IOException, ParseException, InterruptedException {
+
+        Scanner scanner = new Scanner(System.in);
+        PrintWriter printWriter;
+        AdminContainer Container = new AdminContainer();
+
+        printWriter = new PrintWriter(new FileWriter("./src/database/containers.txt", true));
+
+        Path path = Paths.get("./src/database/containers.txt");
+        int id = (int) Files.lines(path).count(); // Define the id of this port
+
+        System.out.println("Enter container's type \nex. : Dry Storage \n      Open top \n      Open side \n      Refrigerated \n      Liquid): "); // Admin input the port's name
+        String type = scanner.nextLine();
+
+        String ID = String.format("c-%02d", id, type); // Generate the container ID in dataqbase
+
+        String weight = "0";
+        boolean validWeightInput = false;
+        while(!validWeightInput) {
+            System.out.println("Enter container's weight (e.g: 100kg): "); // Ask admin to input the container's weight
+            String weightInput  = scanner.nextLine();
+            if (!weightInput .contains("kg")) { //Check if unit measured was input
+                System.out.println("Error: Please include capacity units in kg"); //Display error if measured unit was not input
+            } else {
+                validWeightInput = true;
+                weight = weightInput;
+            }
+        }
+
+        String portId = "0";
+        boolean validInput = false;
+        while(!validInput) {
+            System.out.println("Enter which port the container locate (e.g: p-01): "); // Ask admin to input the container's weight
+            String portIdInput  = scanner.nextLine();
+            if (!portIdInput .contains("p-")) { //Check if unit measured was input
+                System.out.println("Error: Please include relevant port ID"); //Display error if measured unit was not input
+            } else {
+                validInput = true;
+                portId = portIdInput;
+            }
+        }
+
+        printWriter.println(ID + "," + weight + "," + type + "," + portId); // Write port's information to database
+        printWriter.close();
+        System.out.println("Addition successful");
+    }
+
+    public void deleteContainer() throws IOException {
+
+        AdminContainer Container = new AdminContainer();
+        Container.getContainerId();
+        String choiceOrder = UserInput.rawInput();
+
+        ArrayList<String[]> containerList = ReadDatabase.readAllLines("./src/database/containers.txt");
+
+        String[] containerInfo = new String[3];
+        for (int i = 0; i < containerList.size(); i++) {
+            if (i == Integer.parseInt(choiceOrder)) {
+                containerInfo = ReadDatabase.readSpecificLine(containerList.get(i)[1], 1, "./src/database/containers.txt", ",");
+            }
+        }
+
+        ArrayList<String[]> database = ReadDatabase.readAllLines("./src/database/containers.txt");
+
+        ArrayList<String[]> newDatabase = new ArrayList<>();
+        for (String[] strings : database) {
+            if (!strings[0].equals(containerInfo[0])) {
+                newDatabase.add(strings); // replace all port except the deleted one
+            }
+        }
+
+        PrintWriter printWriter = new PrintWriter("./src/database/containers.txt");
+        printWriter.write(""); // erase data
+        printWriter.close();
+
+        // write new data into database
+        for (String[] obj : newDatabase) {
+            WriteFile.rewriteFile("./src/database/containers.txt", "#id, weight, type, portId", String.join(",", obj));
         }
         System.out.println("Deletion successful");
     }

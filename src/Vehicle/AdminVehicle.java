@@ -32,12 +32,12 @@ public class AdminVehicle {
 
     public void getAllVehicleInfo() throws FileNotFoundException {
         ArrayList<String[]> user = new ArrayList<>();
-        Scanner fileProducts = new Scanner(new File("./src/database/vehicles.txt"));
+        Scanner fileVehicles = new Scanner(new File("./src/database/vehicles.txt"));
 
         // The while loop is used to get info in the scanner.
-        while (fileProducts.hasNext()) {
+        while (fileVehicles.hasNext()) {
             String[] vehicleData = new String[3];
-            String line = fileProducts.nextLine();
+            String line = fileVehicles.nextLine();
             StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
             String ID = stringTokenizer.nextToken();
             String Type = stringTokenizer.nextToken();
