@@ -1,5 +1,7 @@
 package Trip;
 
+import DatabaseLinesHandler.FiltersType;
+import DatabaseLinesHandler.LineFilters;
 import Menu.PortManagerMenu;
 import Port.PMPort;
 import Vehicle.PMVehicle;
@@ -11,9 +13,39 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Scanner;
 public class PMTrip {
-    public static final String[] cols = {"ID", "Vehicle Id", "Port A", "Port B", "Status", "Date"};
+    public static final String[] cols = {"ID", "Date Depart", "Date Arrived", "Depart Port", "Arrived Port", "Status"};
     public static final String tripsFilePath = "./src/database/tripsTri.txt";
     public static void createATrip(PMPort port){
+        TableInterface portsTable = PMPort.createTableFromDatabase();
+
+        System.out.println(portsTable);
+
+        LineFilters filters = new LineFilters(FiltersType.EXCLUDE);
+        filters.addFilter(1, port.getId());
+
+        OptionsInterface portsInterface = PMPort.createOptionsInterfaceForPorts("Choose a arrival port for this trip", filters);
+
+        HashMap<String, String> interfaceData = portsInterface.run(null);
+
+        String portOption = interfaceData.get("option");
+
+        if(!portOption.equals("Return")){
+            String arrivalPortLine = interfaceData.get("data");
+
+            TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(port.getId());
+            System.out.println(vehiclesTable);
+
+            OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Choose a vehicle for a trip", port.getId(), null);
+
+            interfaceData = vehiclesInterface.run(null);
+
+            String vehicleOption = interfaceData.get("option");
+
+            if(!vehicleOption.equals("Return")){
+                String vehicleLine = interfaceData.get("data");
+            }
+        }
+        /*
         PromptsInterface questionInterface = new PromptsInterface("askQuestion","Ports input");
         questionInterface.addPrompt("Enter departure port: ");
         questionInterface.addPrompt("Enter arrival port: ");
@@ -27,7 +59,7 @@ public class PMTrip {
 
         String departurePort = results.get(1);
         String arrivalPort = results.get(2);
-        if(PortManagerMenu.checkLineHasId(PMPort.portsFilePath,departurePort)
+        if(PortManagerMenu.checkLineHasId(PMPort.portsFilePath,departurePort, )
                 && PortManagerMenu.checkLineHasId(PMPort.portsFilePath,arrivalPort)){
 
             OptionsInterface vehiclesMenu = new OptionsInterface("vehiclesMenu", "Choose a vehicle to add on a trip", 4);
@@ -35,9 +67,9 @@ public class PMTrip {
             table = PMVehicle.createTableFromDatabase(port.getId());
             System.out.println(table);
 
-
-
         };
+
+         */
         // Display menu need input 2 ports, vehicle
         // check if vehicle has atleast 1 container, fuel
         // check ports landing, capacity
@@ -110,8 +142,8 @@ public class PMTrip {
 
         OptionsInterface questionInterface = new OptionsInterface("askQuestion","Do you want to display all trips or trips fromn port only",2);
 
-        questionInterface.addOption(1,"Yes", null);
-        questionInterface.addOption(2,"No", null);
+        questionInterface.addOption(1,"Yes",null, null);
+        questionInterface.addOption(2,"No",null, null);
 
         HashMap<String, String> interfaceData = questionInterface.run(null);
 

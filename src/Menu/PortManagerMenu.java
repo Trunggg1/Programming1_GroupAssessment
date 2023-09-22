@@ -14,8 +14,7 @@ public class PortManagerMenu {
     private PMPort port;
     private OptionsInterface mainInterface;
     public PortManagerMenu() {}
-
-    public static ArrayList<String> getLinesFromDatabaseById(String filePath, String id, int index){
+    public static ArrayList<String> getLinesFromDatabaseById(String filePath, String id, int colIndex){
         try{
             File file = new File(filePath);
 
@@ -26,7 +25,7 @@ public class PortManagerMenu {
             String fileLine;
             while ((fileLine = reader.readLine()) != null){
                 String[] parts = fileLine.split(",");
-                String trimmedId = parts[index].trim();
+                String trimmedId = parts[colIndex].trim();
 
                 if(trimmedId.equals(id)){
                     lines.add(fileLine);
@@ -63,7 +62,7 @@ public class PortManagerMenu {
             throw new RuntimeException(e);
         }
     }
-    public static boolean checkLineHasId(String filePath, String id){
+    public static boolean checkLineHasId(String filePath, String id, int colIndex){
         try {
             File file = new File(filePath);
 
@@ -74,7 +73,7 @@ public class PortManagerMenu {
             while ((fileLine = reader.readLine()) != null){
                 String[] parts = fileLine.split(",");
 
-                String currentId = parts[0];
+                String currentId = parts[colIndex];
                 if (currentId.equals(id)) {
                     return  true;
                 }
@@ -84,7 +83,7 @@ public class PortManagerMenu {
         }
         return false;
     }
-    public static boolean updateLinesWithId(String filePath, String id, String line){
+    public static boolean updateLinesWithId(String filePath, String id, int colIndex, String line){
         try {
             File file = new File(filePath);
 
@@ -97,7 +96,7 @@ public class PortManagerMenu {
                 String[] parts = fileLine.split(",");
 
                 // Check if the id in the current line matches the target id
-                String currentId = parts[0].trim();
+                String currentId = parts[colIndex].trim();
                 String targetId = id.trim();
 
                 if (currentId.equals(targetId)) {
@@ -119,7 +118,7 @@ public class PortManagerMenu {
             return  false;
         }
     }
-    public static boolean deleteLinesWithId(String filePath, String id){
+    public static boolean deleteLinesWithId(String filePath, String id, int colIndex){
         try {
             File file = new File(filePath);
 
@@ -132,7 +131,7 @@ public class PortManagerMenu {
                 String[] parts = fileLine.split(",");
 
                 // Check if the id in the current line matches the target id
-                String currentId = parts[0];
+                String currentId = parts[colIndex];
 
                 if (!currentId.equals(id)) {
                     content.append(fileLine).append("\n");
@@ -166,8 +165,8 @@ public class PortManagerMenu {
     }
     public void viewLogin(){
         OptionsInterface menu = new OptionsInterface("portManagerLogin","Port Manager login",2);
-        menu.addOption(1,"Log in", null);
-        menu.addOption(2,"Return", null);
+        menu.addOption(1,"Log in",null, null);
+        menu.addOption(2,"Return",null, null);
 
         HashMap<String, String> results = menu.run(null);
 
@@ -230,54 +229,54 @@ public class PortManagerMenu {
     }
     public void setup(){
         OptionsInterface profilePanel = new OptionsInterface("profilePanel","Profile Panel", 2);
-        profilePanel.addOption(1,"Change username",null);
-        profilePanel.addOption(2,"Change password", null);
-        profilePanel.addOption(3,"Go back", null);
+        profilePanel.addOption(1,"Change username",null,null);
+        profilePanel.addOption(2,"Change password",null, null);
+        profilePanel.addOption(3,"Go back",null, null);
 
         OptionsInterface vehiclesPanel = new OptionsInterface("vehiclesPanel","Vehicles Panel",2);
-        vehiclesPanel.addOption(1,"Update a vehicle from the port", null);
-        vehiclesPanel.addOption(2,"Display all vehicles from the port", null);
-        vehiclesPanel.addOption(3,"Display all vehicles from database", null);
-        vehiclesPanel.addOption(4,"Go back", null);
+        vehiclesPanel.addOption(1,"Update a vehicle from the port",null, null);
+        vehiclesPanel.addOption(2,"Display all vehicles from the port",null, null);
+        vehiclesPanel.addOption(3,"Display all vehicles from database",null, null);
+        vehiclesPanel.addOption(4,"Go back",null, null);
 
         OptionsInterface containersPanel = new OptionsInterface("containersPanel","Containers Panel",3);
-        containersPanel.addOption(1,"Add a container to database", null);
-        containersPanel.addOption(2,"Update a container from database", null);
-        containersPanel.addOption(3,"Delete a container from database", null);
-        containersPanel.addOption(4,"Display all containers from the port", null);
-        containersPanel.addOption(5,"Display all containers from database", null);
-        containersPanel.addOption(6,"Go back", null);
+        containersPanel.addOption(1,"Add a container to database",null, null);
+        containersPanel.addOption(2,"Update a container from database",null, null);
+        containersPanel.addOption(3,"Delete a container from database",null, null);
+        containersPanel.addOption(4,"Display all containers from the port",null, null);
+        containersPanel.addOption(5,"Display all containers from database",null, null);
+        containersPanel.addOption(6,"Go back",null,null);
 
         OptionsInterface portPanel = new OptionsInterface("portPanel","Port Panel",3);
-        portPanel.addOption(1,"Update the port", null);
-        portPanel.addOption(2,"Display all ports from database", null);
-        portPanel.addOption(3,"Go back", null);
+        portPanel.addOption(1,"Update the port",null,null);
+        portPanel.addOption(2,"Display all ports from database",null,null);
+        portPanel.addOption(3,"Go back",null,null);
 
         OptionsInterface tripsPanel = new OptionsInterface("tripsPanel","Trips Panel",3);
-        tripsPanel.addOption(1,"Create a trip", null);
-        tripsPanel.addOption(2,"Update a trip from database", null);
-        tripsPanel.addOption(3,"Delete a trip from database", null);
-        tripsPanel.addOption(4,"Display all trips from the port", null);
-        tripsPanel.addOption(5,"Display all trips from database", null);
-        tripsPanel.addOption(6,"Go back", null);
+        tripsPanel.addOption(1,"Create a trip",null,null);
+        tripsPanel.addOption(2,"Update a trip from database",null,null);
+        tripsPanel.addOption(3,"Delete a trip from database",null,null);
+        tripsPanel.addOption(4,"Display all trips from the port",null,null);
+        tripsPanel.addOption(5,"Display all trips from database",null,null);
+        tripsPanel.addOption(6,"Go back",null,null);
 
         OptionsInterface statisticPanel = new OptionsInterface("statisticPanel","Statistic Panel",4);
-        statisticPanel.addOption(1,"Profile", null);
-        statisticPanel.addOption(2,"Port", null);
-        statisticPanel.addOption(3,"Containers", null);
-        statisticPanel.addOption(4,"Vehicles", null);
-        statisticPanel.addOption(5,"Trips", null);
-        statisticPanel.addOption(6,"Summary", null);
-        statisticPanel.addOption(7,"Go back", null);
+        statisticPanel.addOption(1,"Profile",null, null);
+        statisticPanel.addOption(2,"Port",null, null);
+        statisticPanel.addOption(3,"Containers",null, null);
+        statisticPanel.addOption(4,"Vehicles",null, null);
+        statisticPanel.addOption(5,"Trips",null, null);
+        statisticPanel.addOption(6,"Summary",null, null);
+        statisticPanel.addOption(7,"Go back",null, null);
 
         mainInterface = new OptionsInterface("controlPanel", "Control Panel", 4);
-        mainInterface.addOption(1,"Profile panel", profilePanel);
-        mainInterface.addOption(2,"Vehicles panel", vehiclesPanel);
-        mainInterface.addOption(3,"Containers panel", containersPanel);
-        mainInterface.addOption(4,"Port panel", portPanel);
-        mainInterface.addOption(5,"Trips panel", tripsPanel);
-        mainInterface.addOption(6,"Statistic", statisticPanel);
-        mainInterface.addOption(7,"Log out", null);
+        mainInterface.addOption(1,"Profile panel",null, profilePanel);
+        mainInterface.addOption(2,"Vehicles panel",null, vehiclesPanel);
+        mainInterface.addOption(3,"Containers panel",null, containersPanel);
+        mainInterface.addOption(4,"Port panel",null, portPanel);
+        mainInterface.addOption(5,"Trips panel",null, tripsPanel);
+        mainInterface.addOption(6,"Statistic",null, statisticPanel);
+        mainInterface.addOption(7,"Log out",null, null);
     }
     public void run(){
         String interfaceId = "mainInterface";

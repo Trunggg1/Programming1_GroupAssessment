@@ -12,32 +12,41 @@ public class OptionsInterface extends Interface {
     private String name;
     private int width = 2;
     private HashMap<String, String> options = new HashMap<>();
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private HashMap<String, String> optionsData = new HashMap<>();
     public OptionsInterface(String id, String name, int width) {
         this.id = id;
         this.name = name;
         this.width = width;
     }
+    private HashMap<String, String> getInterfaceData(String number){
+        HashMap<String, String> interfaceData = new HashMap<>();
+        interfaceData.put("id", id);
+        interfaceData.put("number", number);
+        interfaceData.put("option", options.get(number));
+        interfaceData.put("data", optionsData.get(number));
+
+        return interfaceData;
+    }
     public void clearOptions(){
         this.options.clear();
         this.childOptionsInterface.clear();
+        this.optionsData.clear();
     }
-    public void addOption(int number, String description, OptionsInterface childInterface){
-        options.put(String.valueOf(number), description);
-        childOptionsInterface.put(String.valueOf(number), childInterface);
+    public void addOption(int number, String optionName, String optionData,OptionsInterface childInterface){
+        this.options.put(String.valueOf(number), optionName);
+        this.optionsData.put(String.valueOf(number), optionData);
+        this.childOptionsInterface.put(String.valueOf(number), childInterface);
     }
     public void removeOption(int number){
-        options.remove(String.valueOf(number));
-        childOptionsInterface.remove(String.valueOf(number));
+        this.options.remove(String.valueOf(number));
+        this.optionsData.remove(String.valueOf(number));
+        this.childOptionsInterface.remove(String.valueOf(number));
     }
     public String getId() {
         return id;
     }
-    public HashMap<String, String> getOptions() {
-        return options;
+    public void setName(String name) {
+        this.name = name;
     }
     public String toString() {
         int gap = 5;
@@ -103,12 +112,11 @@ public class OptionsInterface extends Interface {
 
                 if(childInterface!= null){
                     if(childInterface.getId().equals(interfaceId)){
-                        HashMap<String, String> result = childInterface.run(null);
+                        HashMap<String, String> interfaceData = childInterface.run(null);
 
-                        if(result != null){
-                            return  result;
+                        if(interfaceData != null){
+                            return  interfaceData;
                         }
-
                         break;
                     }
                 }
@@ -144,11 +152,7 @@ public class OptionsInterface extends Interface {
                                 return data;
                             }
                         }else{
-                            HashMap<String,String> data = new HashMap<>();
-
-                            data.put("id",id);
-                            data.put("option",textOption);
-                            return data;
+                            return getInterfaceData(inputResult);
                         }
                     }
                 }

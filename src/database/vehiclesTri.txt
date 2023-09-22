@@ -1,4 +1,4 @@
-#ID, Name, Carrying Capacity, Current Fuel, Fuel Capacity, Port ID
+#ID, Name, Carrying Capacity, Current Fuel, Fuel Capacity, Current Port ID
 btr-01, Reefer Truck 1, 7000kg, 56L, 70L, p-01
 btr-02, Normal Truck 1, 7000kg, 56L, 70L, p-01
 btr-03, Tanker Truck 1, 7000kg, 56L, 70L, null

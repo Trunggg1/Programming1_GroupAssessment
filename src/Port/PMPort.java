@@ -1,17 +1,18 @@
 package Port;
 
 import Container.PMContainer;
+import DatabaseLinesHandler.FiltersType;
+import DatabaseLinesHandler.LineFilters;
+import DatabaseLinesHandler.LinesHandler;
 import Menu.PortManagerMenu;
 import Trip.PMTrip;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import static Menu.PortManagerMenu.updateLinesWithId;
 
@@ -22,6 +23,35 @@ public class PMPort {
     private String name;
     private String capacity;
     private String landingAbility;
+
+    public static OptionsInterface createOptionsInterfaceForPortsLandingTypes(String title){
+        OptionsInterface landingTypesInterface = new OptionsInterface("askQuestion",title,2);
+        landingTypesInterface.addOption(1,"Truck Availability",null,null);
+        landingTypesInterface.addOption(2,"Unavailability",null, null);
+
+       return landingTypesInterface;
+    }
+    public static OptionsInterface createOptionsInterfaceForPorts(String name, LineFilters lineFilters){
+        ArrayList<String> lines = LinesHandler.getLinesFromDatabase(portsFilePath,lineFilters);
+
+        OptionsInterface portsInterface = new OptionsInterface("portsInterface",name, 5);
+
+        for(int i = 0; i < lines.size(); i++){
+            String line = lines.get(i);
+            String[] parts = line.split(",");
+
+            String optionName = parts[1] + "(" + parts[0] + ")";
+
+            portsInterface.addOption(i + 1,optionName,line,null);
+
+            if(i == lines.size() - 1){
+                portsInterface.addOption(i + 1,optionName,line,null);
+                portsInterface.addOption(i + 2,"Return",null,null);
+            }
+        }
+
+        return portsInterface;
+    }
     public static TableInterface createTableFromDatabase(){
         TableInterface table = new TableInterface("ports","Ports",containersCols,",");
 
@@ -44,35 +74,29 @@ public class PMPort {
         this.capacity = capacity;
         this.landingAbility = landingAbility;
     }
+
     private void getPortData(){
-        Scanner fileData;
+        LineFilters lineFilters = new LineFilters(FiltersType.INCLUDE);
+        lineFilters.addFilter(1,  this.id);
 
-        try{
-            fileData = new Scanner(new File(portsFilePath));
-        }catch (Exception e){
-            fileData = null;
-        }
+        ArrayList<String> lines = LinesHandler.getLinesFromDatabase(portsFilePath, lineFilters);
 
-        if(fileData!= null){
-            while (fileData.hasNext()){
-                String line = fileData.nextLine();
-                StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
+         String line = lines.get(0);
 
-                String idField = stringTokenizer.nextToken();
-                String nameField = stringTokenizer.nextToken();
-                String capacityField = stringTokenizer.nextToken();
-                String landingAbility = stringTokenizer.nextToken();
+        if(line != null){
+            String[] parts = line.split(",");
 
-                if(idField.equals(this.id)){
-                    this.id = idField;
-                    this.landingAbility = landingAbility;
-                    this.name = nameField;
-                    this.capacity = capacityField;
-                    break;
-                }
-            }
+            this.id = parts[0];
+            this.name = parts[1];
+            this.capacity = parts[2];
+            this.landingAbility = parts[3];
         }
     }
+
+    public String getLandingAbility() {
+        return landingAbility;
+    }
+
     public String getId() {
         return id;
     }
@@ -82,16 +106,16 @@ public class PMPort {
     }
     private void updatePort(){
         OptionsInterface updateInterface = new OptionsInterface("update","What update for the port?",4);
-        updateInterface.addOption(1,"Name",null);
-        updateInterface.addOption(2,"Capacity",null);
-        updateInterface.addOption(3,"Landing Ability",null);
-        updateInterface.addOption(4,"Return",null);
+        updateInterface.addOption(1,"Name",null,null);
+        updateInterface.addOption(2,"Capacity",null,null);
+        updateInterface.addOption(3,"Landing Ability",null,null);
+        updateInterface.addOption(4,"Return",null,null);
 
         Scanner input = new Scanner(System.in);
 
         boolean keepRunning = true;
         while (keepRunning){
-            System.out.println("Current port: " + toString());
+            System.out.println("Current port: " + this);
             HashMap<String, String> interfaceData = updateInterface.run(null);
 
             String option = interfaceData.get("option");
@@ -100,58 +124,47 @@ public class PMPort {
                 case "Name":{
                     System.out.println("Enter name: ");
 
-                    this.name = input.nextLine();
-
-                    boolean success = updateLinesWithId(portsFilePath, id, toString());
-                    if(success){
-                        System.out.println("Updated port successfully!");
-                        break;
-                    }else{
-                        System.out.println("Failed to update port!");
-                    }
+                    this.name = input.nextLine().trim();
 
                     break;
                 }
                 case "Capacity":{
                     System.out.println("Enter Capacity(Example: 1000Kg): ");
 
-                    this.capacity = input.nextLine();
+                    String inputResult = input.nextLine().trim();
 
-                    boolean success = updateLinesWithId(portsFilePath, id, toString());
-
-                    if(success){
-                        System.out.println("Updated port successfully!");
-                        break;
+                    if(inputResult.matches("\\d+Kg")){
+                        this.capacity = inputResult;
                     }else{
-                        System.out.println("Failed to update port!");
+                        this.capacity = inputResult + "Kg";
                     }
 
                     break;
                 }
                 case "Landing Ability":{
-                    OptionsInterface questionInterface = new OptionsInterface("askQuestion","Which landing ability does this port have?",4);
-                    questionInterface.addOption(1,"Truck Availability",null);
-                    questionInterface.addOption(2,"Unavailability", null);
+                    OptionsInterface landingTypesInterface = createOptionsInterfaceForPortsLandingTypes("Which landing ability does this port have?");
 
-                    interfaceData = questionInterface.run(null);
+                    interfaceData = landingTypesInterface.run(null);
 
                     this.landingAbility = interfaceData.get("option");
-
-                    String line = toString();
-
-                    boolean success = updateLinesWithId(portsFilePath, id, line);
-
-                    if(success){
-                        System.out.println("Updated port successfully!");
-                    }else{
-                        System.out.println("Failed to update port!");
-                    }
 
                     break;
                 }
                 case "Return":{
                     keepRunning = false;
                     break;
+                }
+
+            }
+
+            if(keepRunning){
+                boolean success = updateLinesWithId(portsFilePath, id,0, toString());
+
+                if(success){
+                    System.out.println("Updated port successfully!");
+                    break;
+                }else{
+                    System.out.println("Failed to update port!");
                 }
             }
         }
@@ -200,7 +213,7 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    TableInterface table = PMVehicle.createTableFromDatabase(this.name);
+                    TableInterface table = PMVehicle.createTableFromDatabase(this.id);
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
@@ -253,17 +266,7 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    OptionsInterface questionInterface = new OptionsInterface("askQuestion", "Display containers inside port only?", 2);
-                    questionInterface.addOption(1,"Yes", null);
-                    questionInterface.addOption(2,"No", null);
-
-                    HashMap<String, String> interfaceData = questionInterface.run(null);
-
-                    if(interfaceData.get("option").equals("Yes")){
-                        PMContainer.updateContainerFromDatabase(id);
-                    }else{
-                        PMContainer.updateContainerFromDatabase(null);
-                    }
+                    PMContainer.updateContainerFromDatabase();
 
                     System.out.println("Go back?(Y/N)");
                     String inputResult = input.nextLine();
@@ -293,7 +296,11 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    TableInterface table = PMContainer.createTableFromDatabase(this.id);
+                    LineFilters lineFilters = new LineFilters(FiltersType.INCLUDE);
+                    lineFilters.addFilter(4, this.id);
+
+                    TableInterface table = PMContainer.createTableFromDatabase(lineFilters);
+
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
