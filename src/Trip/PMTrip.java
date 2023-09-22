@@ -1,5 +1,6 @@
 package Trip;
 
+import Container.PMContainer;
 import LinesHandler.FiltersType;
 import LinesHandler.LineFilters;
 import Port.PMPort;
@@ -8,13 +9,142 @@ import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 public class PMTrip {
+    private static String getCurrentDate() {
+        // Get the current date in the desired format (e.g., "yyyy-MM-dd")
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.format(formatter);
+    }
     public static final String[] cols = {"ID", "Date Depart", "Date Arrived", "Depart Port", "Arrived Port", "Status"};
-    public static final String tripsFilePath = "./src/database/tripsTri.txt";
+    public static final String tripsFilePath = "./src/database/PMtrips.txt";
+    private static boolean checkPortLandingCapacity(String portA, String portB) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("./src/database/PMports.txt"))) {
+            String line;
+            int capacityPortA = 0;
+            int capacityPortB = 0;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 1 && parts[0].trim().equals(portA)) {
+                    // Read and store the landing capacity of Port A
+                    String capacityStr = parts[2].trim();
+                    if (capacityStr.endsWith("Kg")) {
+                        capacityPortA = Integer.parseInt(capacityStr.replaceAll("[^0-9]", ""));
+                    }
+                }
+                if (parts.length >= 1 && parts[0].trim().equals(portB)) {
+                    // Read and store the landing capacity of Port B
+                    String capacityStr = parts[2].trim();
+                    if (capacityStr.endsWith("Kg")) {
+                        capacityPortB = Integer.parseInt(capacityStr.replaceAll("[^0-9]", ""));
+                    }
+                }
+            }
+
+            // Check if the combined capacity of both ports is sufficient
+            int requiredCapacity = 1000; // Adjust this based on your requirements
+
+            return (capacityPortA + capacityPortB) >= requiredCapacity;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Error occurred or not found
+    }
+    public static double calculateFuelConsumption(String[] vehicleParts, double distance, ArrayList<String> containersLines){
+        String type;
+
+        if(vehicleParts[0].matches("btr-\\d+")){
+            type = "vehicle";
+        }else{
+            type = "ship";
+        }
+
+        double dryStorage;
+        double openTop;
+        double openSide;
+        double refrigerated;
+        double liquid;
+
+        if(type.equals("ship")){
+            dryStorage = 3.5;
+            openTop = 2.8;
+            openSide = 2.7;
+            refrigerated = 4.5;
+            liquid = 4.8;
+        }else{
+            dryStorage = 4.6;
+            openTop = 3.2;
+            openSide = 3.2;
+            refrigerated = 5.4;
+            liquid = 5.3;
+        }
+
+        double value = 0;
+
+        for(String line : containersLines){
+            String[] containerParts = line.split(",");
+
+            String containerType = containerParts[2];
+            double containerWeight = Double.parseDouble(containerParts[1].replaceAll("(?i)kg",""));
+
+            double rate = 0;
+
+            switch (containerType){
+                case "Open Top", "openTop":{
+                    rate = openTop;
+                    break;
+                }
+                case "Refrigerated, refrigerated":{
+                    rate = refrigerated;
+                    break;
+                }
+                case "Dry Storage, dryStorage":{
+                    rate = dryStorage;
+                    break;
+                }
+                case "Open side, openSide":{
+                    rate = openSide;
+                    break;
+                }
+                case "Liquid, liquid":{
+                    rate = liquid;
+                    break;
+                }
+            }
+
+            System.out.println(distance + "   " + containerWeight + "    " + rate);
+            System.out.println(distance * containerWeight * rate);
+
+            value = value + (distance * containerWeight * rate);
+        }
+
+        System.out.println(value);
+        return value;
+    }
+    public static double calculateContainersWeight(ArrayList<String> lines){
+        double weight = 0;
+
+        for(String line: lines){
+            String[] containerParts = line.split(",");
+            weight = weight +  Double.parseDouble(containerParts[1].replaceAll("(?i)kg",""));
+        }
+
+        return weight;
+    }
     public static void createATrip(PMPort port){
+        System.out.println(getCurrentDate());
+
         LineFilters filters = new LineFilters();
         filters.addFilter(1, port.getId(),FiltersType.EXCLUDE);
 
@@ -30,14 +160,15 @@ public class PMTrip {
 
         if(!portOption.equals("Return")){
             String arrivalPortLine = interfaceData.get("data");
+            String[] arrivalPortParts = arrivalPortLine.split(",");
 
             filters = new LineFilters();
-            filters.addFilter(4,port.getId(),FiltersType.INCLUDE);
+            filters.addFilter(6,port.getId(),FiltersType.INCLUDE);
 
             TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(filters);
             System.out.println(vehiclesTable);
 
-            OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Choose a vehicle for a trip",filters);
+            OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Choose a vehicle for the trip",filters);
 
             interfaceData = vehiclesInterface.run(null);
 
@@ -45,6 +176,21 @@ public class PMTrip {
 
             if(!vehicleOption.equals("Return")){
                 String vehicleLine = interfaceData.get("data");
+                String[] vehicleParts = vehicleLine.split(",");
+
+                checkPortLandingCapacity(port.getId(),arrivalPortParts[0]);
+
+                double arrivalPortRemainingCapacity = PMPort.getRemainingCapacity(arrivalPortParts[0]);
+                double portsDistance = PMPort.calculateDistanceBetweenPorts(port.getId(),arrivalPortParts[0]);
+
+                ArrayList<String> containersLine = PMContainer.getContainersFromVehicle(vehicleParts[0]);
+
+                if(containersLine.isEmpty()){
+                    System.out.println("Please load atleast one container on the vehicle before starting a trip!");
+                }else{
+                    double containersWeights = calculateContainersWeight(containersLine);
+                    double consumption = calculateFuelConsumption(vehicleParts,portsDistance,containersLine);
+                }
             }
         }
         /*

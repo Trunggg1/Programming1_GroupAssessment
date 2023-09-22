@@ -14,27 +14,72 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class PMPort {
-    public static final String[] portsCols = {"ID","Name","Capacity","Landing Ability"};
-    public static final String portsFilePath = "./src/database/ports.txt";
+    public static final String[] portsCols = {"ID","Name","Capacity","Landing Ability","Latitude","Longitude"};
+    public static final String portsFilePath = "./src/database/PMports.txt";
     private String id;
     private String name;
     private String capacity;
     private String landingAbility;
-    public void checkIfPortCanAddContainer(String containerWeight){
+    public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+        // Radius of the Earth in kilometers
+        double earthRadius = 6371.0;
+
+        // Convert latitude and longitude from degrees to radians
+        lat1 = Math.toRadians(lat1);
+        lon1 = Math.toRadians(lon1);
+        lat2 = Math.toRadians(lat2);
+        lon2 = Math.toRadians(lon2);
+
+        // Haversine formula
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = earthRadius * c;
+
+        return distance;
+    }
+    public static double calculateDistanceBetweenPorts(String portOneId, String portTwoId){
         LineFilters filters = new LineFilters();
-        filters.addFilter(4,containerWeight,FiltersType.INCLUDE);
+        filters.addFilter(1,portOneId,FiltersType.INCLUDE);
+
+        String portOneLine = LinesHandler.getLinesFromDatabase(portsFilePath, filters).get(0);
+
+        filters = new LineFilters();
+        filters.addFilter(1,portTwoId,FiltersType.INCLUDE);
+        String portTwoLine = LinesHandler.getLinesFromDatabase(portsFilePath, filters).get(0);
+
+        String[] portOneData = portOneLine.split(",");
+        String[] portTwoData = portTwoLine.split(",");
+
+        double portOneLatitude = Double.parseDouble(portOneData[4]);
+        double portOneLongitude = Double.parseDouble(portOneData[5]);
+
+        double portTwoLatitude = Double.parseDouble(portTwoData[4]);
+        double portTwoLongitude = Double.parseDouble(portTwoData[5]);
+
+        return haversine(portOneLatitude, portOneLongitude, portTwoLatitude, portTwoLongitude);
+    }
+    public static double getRemainingCapacity(String portId){
+        LineFilters filters = new LineFilters();
+        filters.addFilter(1,portId,FiltersType.INCLUDE);
+        String portLine = LinesHandler.getLinesFromDatabase(portsFilePath, filters).get(0);
+        String[] portData = portLine.split(",");
+
+        filters = new LineFilters();
+        filters.addFilter(4,portId,FiltersType.INCLUDE);
         ArrayList<String> containersLine = LinesHandler.getLinesFromDatabase(PMContainer.containersFilePath, filters);
 
         double containersWeight = 0;
 
         for(String line: containersLine){
             String[] parts = line.split(",");
-
-            containersWeight = containersWeight + Double.parseDouble(parts[1]);
+            containersWeight = containersWeight + Double.parseDouble(parts[1].replaceAll("(?i)kg", ""));
         }
 
-        //double capacity = this.capacity[0];
-       // return this.capacity - containersWeight;
+        double capacity = Double.parseDouble(portData[2].replaceAll("(?i)kg", ""));
+
+        return capacity  - containersWeight;
     }
     public static OptionsInterface createOptionsInterfaceForPortsLandingTypes(String title){
         OptionsInterface landingTypesInterface = new OptionsInterface("askQuestion",title,2);
@@ -46,7 +91,7 @@ public class PMPort {
     public static OptionsInterface createOptionsInterfaceForPorts(String name, LineFilters lineFilters){
         ArrayList<String> lines = LinesHandler.getLinesFromDatabase(portsFilePath,lineFilters);
 
-        OptionsInterface portsInterface = new OptionsInterface("portsInterface",name, 5);
+        OptionsInterface portsInterface = new OptionsInterface("portsInterface",name, 3);
 
         for(int i = 0; i < lines.size(); i++){
             String line = lines.get(i);
@@ -220,6 +265,14 @@ public class PMPort {
     }
     public void handleVehicleOptions(String option) {
         switch (option){
+            case "Unload a container": {
+                PMVehicle.unloadContainter();
+                break;
+            }
+            case "Load a container": {
+                PMVehicle.loadContainer(this.id);
+                break;
+            }
             case "Update a vehicle from the port": {
                 PMVehicle.updateVehicleFromDatabase(this.id);
                 break;

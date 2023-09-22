@@ -30,6 +30,11 @@ public class PMContainer {
 
         return optionInterface;
     }
+    public static ArrayList<String> getContainersFromVehicle(String vehicleId){
+        LineFilters filers = new LineFilters();
+        filers.addFilter(5,vehicleId,FiltersType.INCLUDE);
+        return LinesHandler.getLinesFromDatabase(containersFilePath,filers);
+    }
     public static TableInterface createTableFromDatabase(LineFilters lineFilters){
         ArrayList<String> lines = LinesHandler.getLinesFromDatabase(containersFilePath, lineFilters);
         return LinesHandler.createTableFromLines(lines, "containersList", "Containers list", containersCols, ",");
@@ -43,7 +48,7 @@ public class PMContainer {
             String line = lines.get(i);
             String[] parts = line.split(",");
 
-            String optionName = parts[0].trim() + "(" + parts[1].trim() + "Kg" + ")";
+            String optionName = parts[0].trim() + "(" + parts[1].trim() + ")";
 
             containersInterface.addOption(i + 1,optionName,line,null);
 
@@ -260,21 +265,37 @@ public class PMContainer {
                         break;
                     }
                     case "Port ID":{
-                            LineFilters filters = new LineFilters();
-                            filters.addFilter(1,parts[3],FiltersType.EXCLUDE);
+                            while (true){
+                                LineFilters filters = new LineFilters();
+                                filters.addFilter(1,parts[3],FiltersType.EXCLUDE);
 
-                            TableInterface portsTable = PMPort.createTableFromDatabase(filters);
+                                TableInterface portsTable = PMPort.createTableFromDatabase(filters);
 
-                            System.out.println(portsTable);
+                                System.out.println(portsTable);
 
-                            OptionsInterface portsInterface = PMPort.createOptionsInterfaceForPorts("Which port do you want to set?", filters);
+                                OptionsInterface portsInterface = PMPort.createOptionsInterfaceForPorts("Which port do you want to set?", filters);
 
-                            interfaceData = portsInterface.run(null);
+                                interfaceData = portsInterface.run(null);
 
-                            String portLine = interfaceData.get("data");
-                            String[] portParts = portLine.split(",");
+                                String portLine = interfaceData.get("data");
+                                String[] portParts = portLine.split(",");
 
-                            parts[3] = portParts[0];
+                                double remainingCapacity = PMPort.getRemainingCapacity(portParts[0]);
+
+                                if(remainingCapacity > 0){
+                                    parts[3] = portParts[0];
+                                    break;
+                                }else{
+                                    System.out.println("Failed to update container! port reached maximum capacity");
+
+                                    System.out.print("Return?(Y/N): ");
+                                    String inputResult = input.nextLine().trim();;
+
+                                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                                        keepRunning = false;
+                                    }
+                                }
+                            }
                         break;
                     }
                     case "Return":{

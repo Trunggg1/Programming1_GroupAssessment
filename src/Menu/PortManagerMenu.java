@@ -89,11 +89,13 @@ public class PortManagerMenu {
         profilePanel.addOption(2,"Change password",null, null);
         profilePanel.addOption(3,"Go back",null, null);
 
-        OptionsInterface vehiclesPanel = new OptionsInterface("vehiclesPanel","Vehicles Panel",2);
-        vehiclesPanel.addOption(1,"Update a vehicle from the port",null, null);
-        vehiclesPanel.addOption(2,"Display all vehicles from the port",null, null);
-        vehiclesPanel.addOption(3,"Display all vehicles from database",null, null);
-        vehiclesPanel.addOption(4,"Go back",null, null);
+        OptionsInterface vehiclesPanel = new OptionsInterface("vehiclesPanel","Vehicles Panel",3);
+        vehiclesPanel.addOption(1,"Load a container",null, null);
+        vehiclesPanel.addOption(2,"Unload a container",null, null);
+        vehiclesPanel.addOption(3,"Update a vehicle from the port",null, null);
+        vehiclesPanel.addOption(4,"Display all vehicles from the port",null, null);
+        vehiclesPanel.addOption(5,"Display all vehicles from database",null, null);
+        vehiclesPanel.addOption(6,"Go back",null, null);
 
         OptionsInterface containersPanel = new OptionsInterface("containersPanel","Containers Panel",3);
         containersPanel.addOption(1,"Add a container to database",null, null);
