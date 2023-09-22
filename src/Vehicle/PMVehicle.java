@@ -13,6 +13,12 @@ import java.util.Scanner;
 
 public class PMVehicle {
     public static final String[] vehiclesCols = {"ID","Name","Carrying Capacity","Current Fuel","Fuel Capacity","Current Port ID"};
+    public static final int colId = 1;
+    public static final int colName = 2;
+    public static final int colCarryingCapacity = 3;
+    public static final int colCurrentFuel = 4;
+    public static final int colFuelCapacity = 5;
+    public static final int colCurrentPortId = 6;
     public static final String vehiclesFilePath = "./src/database/PMvehicles.txt";
     private String id;
     private String name;
@@ -38,7 +44,7 @@ public class PMVehicle {
 
         while (keepRunning){
             LineFilters filters = new LineFilters();
-            filters.addFilter(6,portId, FiltersType.INCLUDE);
+            filters.addFilter(colCurrentPortId,portId, FiltersType.INCLUDE);
 
             TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(filters);
             OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Which vehicle you want to load on?", filters);
@@ -55,8 +61,8 @@ public class PMVehicle {
                 String vehicleId = vehicleParts[0];
 
                 filters = new LineFilters();
-                filters.addFilter(4,portId, FiltersType.INCLUDE);
-                filters.addFilter(5,"null", FiltersType.INCLUDE);
+                filters.addFilter(PMContainer.colPortId,portId, FiltersType.INCLUDE);
+                filters.addFilter(PMContainer.colVehicleId,"null", FiltersType.INCLUDE);
 
                 TableInterface containersTable = PMContainer.createTableFromDatabase(filters);
                 OptionsInterface containersInterface = PMContainer.createOptionsInterfaceForContainers("Which container you want to load?", filters);
@@ -76,19 +82,17 @@ public class PMVehicle {
                     double containerWeight = Double.parseDouble(containersPart[1].replaceAll("(?i)[kK]g",""));
                     double currentCapacity = getVehicleCurrentCapacity(vehicleId);
 
-                    System.out.println(vehicleMaxCapacity + "  " + containerWeight + "  " + currentCapacity);
-                    if(currentCapacity + containerWeight > vehicleMaxCapacity){
+                   if(currentCapacity + containerWeight > vehicleMaxCapacity){
                         System.out.println("Failed to load the container on vehicle because it reached max capacity!");
                     }else{
                         containersPart[4] = vehicleId;
                         String line = String.join(",",containersPart);
                         filters = new LineFilters();
-                        filters.addFilter(1,containerId, FiltersType.INCLUDE);
+                        filters.addFilter(PMContainer.colId,containerId, FiltersType.INCLUDE);
                         boolean success = LinesHandler.updateLinesFromDatabase(PMContainer.containersFilePath, line, filters);
 
                         if(success){
-                            System.out.println("Successfully load container " + containerId +  "on vehicle " + vehicleId + "!");
-                            keepRunning = false;
+                            System.out.println("Successfully loaded container " + containerId +  " on vehicle " + vehicleId + "!");
                         }
                     }
                 }
@@ -96,64 +100,13 @@ public class PMVehicle {
                 keepRunning = false;
             }
         }
-        /*
-        while (keepRunning){
-            LineFilters filters = new LineFilters();
-            filters.addFilter(4,portId, FiltersType.INCLUDE);
-            filters.addFilter(5,vehicleId, FiltersType.INCLUDE);
-
-            TableInterface containersTable = PMContainer.createTableFromDatabase(filters);
-            OptionsInterface containersInterface = PMContainer.createOptionsInterfaceForContainers("Which container you want to load?", filters);
-
-            System.out.println(containersTable);
-            HashMap<String, String> interfaceData = containersInterface.run(null);
-
-            String option = interfaceData.get("option");
-
-            if(!option.equals("Return")){
-                String containerLine = interfaceData.get("data");
-                String[] containersPart = containerLine.split(",");
-
-                String containerId = containersPart[0];
-
-                filters = new LineFilters();
-                filters.addFilter(6,portId, FiltersType.INCLUDE);
-                OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Which vehicle you want to load on?", filters);
-
-                HashMap<String, String> vehicleInterfaceData = vehiclesInterface.run(null);
-
-                String vehicleOption = vehicleInterfaceData.get("option");
-
-                if(!vehicleOption.equals("Return")){
-                    String vehicleLine = vehicleInterfaceData.get("data");
-
-                    String[] vehicleParts = vehicleLine.split(",");
-
-                    String vehicleId = vehicleParts[0];
-
-                    double vehicleMaxCapacity = Double.parseDouble(vehicleParts[2].replaceAll("(?i)[kK]g",""));
-                    double containerWeight = Double.parseDouble(containersPart[1].replaceAll("(?i)[kK]g",""));
-                    double currentCapacity = getVehicleCurrentCapacity(vehicleId);
-
-                    if(currentCapacity + containerWeight > vehicleMaxCapacity){
-                        System.out.println("Failed to load the container on vehicle because it reached max capacity!");
-                    }else{
-                        containersPart[4] = vehicleId;
-                        String line = String.join(",",containersPart);
-                        filters = new LineFilters();
-                        filters.addFilter(1,containerId, FiltersType.INCLUDE);
-                        LinesHandler.updateLinesFromDatabase(PMContainer.containersFilePath,line,filters);
-                    }
-                }
-            }else{
-                keepRunning = false;
-            }
-
-
-        }
-*/
     }
     public static void unloadContainter(){
+        boolean keepRunning = true;
+
+        while (keepRunning){
+
+        }
     }
     public static OptionsInterface createOptionsInterfaceForVehicles(String name, LineFilters lineFilters) {
         OptionsInterface containersInterface = new OptionsInterface("vehiclesInterface", name, 3);

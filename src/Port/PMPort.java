@@ -15,6 +15,12 @@ import java.util.Scanner;
 
 public class PMPort {
     public static final String[] portsCols = {"ID","Name","Capacity","Landing Ability","Latitude","Longitude"};
+    public static final int colId = 1;
+    public static final int colName = 2;
+    public static final int colCapacity = 3;
+    public static final int colLandingAbility = 4;
+    public static final int colLatitude = 5;
+    public static final int colLongitude = 6;
     public static final String portsFilePath = "./src/database/PMports.txt";
     private String id;
     private String name;

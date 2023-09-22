@@ -55,6 +55,10 @@ public class OptionsInterface extends Interface {
         int index = 0;
         String[] texts = new String[options.size()];
 
+        if(this.options.size() < 2){
+            textLongestLength = this.name.length();
+        }
+
         for (Map.Entry<Integer, String> entry : options.entrySet()) {
             Integer optionNumber = entry.getKey();
             String optionText = entry.getValue();

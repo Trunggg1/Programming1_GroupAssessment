@@ -15,6 +15,12 @@ import java.util.regex.Pattern;
 
 public class PMContainer {
     public static final String[] containersCols = {"ID","Weight","Type","Port ID", "Vehicle ID"};
+    public static final int colId = 1;
+    public static final int colWeight = 2;
+    public static final int colType = 3;
+    public static final int colPortId = 4;
+    public static final int colVehicleId = 5;
+
     public static final String containersFilePath = "./src/database/containers.txt";
     private String id;
     private Double weight;
@@ -60,17 +66,11 @@ public class PMContainer {
 
         return containersInterface;
     }
-    public static void loadContainerOnVehicle(String portId){
-        TableInterface containersTable = createTableFromDatabase(null);
-        //TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(portId);
-
-
-    }
     public static void addContainerToDatabase(String portId) {
         TableInterface table = createTableFromDatabase(null);
         PromptsInterface prompt = new PromptsInterface("containersPrompt","Add container inputs");
         prompt.addPrompt("Enter ID: ");
-        prompt.addPrompt("Enter Weight(Example: 5.9)Kg");
+        prompt.addPrompt("Enter Weight(Example: 5.9Kg)");
 
         String id;
         String weight;
@@ -214,10 +214,11 @@ public class PMContainer {
                                 System.out.println("ID must follow format: c-00");
 
                                 System.out.print("Return?(Y/N): ");
-                                inputResult = input.nextLine().trim();;
+                                inputResult = input.nextLine().trim();
 
-                                if(inputResult.equals("Y") || inputResult.equals("y")){
+                                if(inputResult.matches("[yY]")){
                                     keepRunning = false;
+                                    break;
                                 }
                             }
                         }
@@ -242,8 +243,9 @@ public class PMContainer {
                                 System.out.print("Return?(Y/N): ");
                                 inputResult = input.nextLine().trim();;
 
-                                if(inputResult.equals("Y") || inputResult.equals("y")){
+                                if(inputResult.matches("[yY]")){
                                     keepRunning = false;
+                                    break;
                                 }
                             }
                         }
