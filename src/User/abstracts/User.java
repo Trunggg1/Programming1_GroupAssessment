@@ -1,5 +1,7 @@
 package User.abstracts;
 
+import java.util.Scanner;
+
 public abstract class User {
     public static final String usersFilePath = "./src/database/portManagers.txt";
     private String type;
@@ -11,18 +13,51 @@ public abstract class User {
         this.password = password;
         this.type = type;
     }
-    public void changePassword(){
-        //Create a menu to ask to input password
-        //Change the password on database
-        //Update the password: this.password =
-        //Println new Username and Password
+    public void changePassword() {
+        Scanner scanner = new Scanner(System.in);
+
+        // Create a menu to ask for the current password
+        System.out.print("Enter your current password: ");
+        String currentPassword = scanner.nextLine();
+
+        // Check if the entered current password matches the user's current password
+        if (!currentPassword.equals(password)) {
+            System.out.println("Incorrect current password. Password change failed.");
+            return;
+        }
+
+        // Ask the user to enter a new password
+        System.out.print("Enter your new password: ");
+        String newPassword = scanner.nextLine();
+
+        // Update the password in the database
+        this.password = newPassword;
+
+        System.out.println("Password changed successfully.");
     }
-    public void changeUsername(){
-        //Create a menu to ask to input password
-        //Change the password on database
-        //Update the password: this.username =
-        //Println new Username and Password
+    public void changeUsername() {
+        Scanner scanner = new Scanner(System.in);
+
+        // Create a menu to ask for the current password
+        System.out.print("Enter your current password: ");
+        String currentPassword = scanner.nextLine();
+
+        // Check if the entered current password matches the user's current password
+        if (!currentPassword.equals(password)) {
+            System.out.println("Incorrect current password. Username change failed.");
+            return;
+        }
+
+        // Ask the user to enter a new username
+        System.out.print("Enter your new username: ");
+        String newUsername = scanner.nextLine();
+
+        // Update the username in the database
+        this.username = newUsername;
+
+        System.out.println("Username changed successfully.");
     }
+
     public void handleProfileOptions(String option) {
         switch (option){
             case "Change username"->{
