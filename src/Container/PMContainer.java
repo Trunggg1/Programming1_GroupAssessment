@@ -1,11 +1,9 @@
 package Container;
 
-import DatabaseLinesHandler.FiltersType;
-import DatabaseLinesHandler.LineFilters;
-import DatabaseLinesHandler.LinesHandler;
-import Menu.PortManagerMenu;
+import LinesHandler.FiltersType;
+import LinesHandler.LineFilters;
+import LinesHandler.LinesHandler;
 import Port.PMPort;
-import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
@@ -59,7 +57,7 @@ public class PMContainer {
     }
     public static void loadContainerOnVehicle(String portId){
         TableInterface containersTable = createTableFromDatabase(null);
-        TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(portId);
+        //TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(portId);
 
 
     }
@@ -114,7 +112,7 @@ public class PMContainer {
             line = id + ", " + weight + ", " + type + "," + "null" + "," + "null";
         }
 
-        boolean success = PortManagerMenu.addLineToDatabase(containersFilePath, line);
+        boolean success = LinesHandler.addLineToDatabase(containersFilePath, line);
 
         if(success){
             System.out.println("Successfully added container to database!");
@@ -149,7 +147,10 @@ public class PMContainer {
                 }
 
                 // Use function to delete the container
-                boolean deleted = PortManagerMenu.deleteLinesWithId(containersFilePath, containerIdToDelete,0);
+                LineFilters filters = new LineFilters();
+                filters.addFilter(1,containerIdToDelete, FiltersType.INCLUDE);
+
+                boolean deleted = LinesHandler.deleteLinesWithId(containersFilePath, filters);
 
                 if (deleted) {
                     System.out.println("Container with ID " + containerIdToDelete + " deleted successfully.");
@@ -219,14 +220,18 @@ public class PMContainer {
                     }
                     case "Weight":{
                         while (true){
-                            System.out.println("Enter weight(Example: 5.9)Kg: ");
+                            System.out.println("Enter weight(Example: 5.9Kg): ");
 
                             String inputResult = input.nextLine().trim();;
 
-                            if(inputResult.matches("\\d+.\\d+")){
+                            if(inputResult.matches("\\d+.\\d+") ){
+                                parts[1] = inputResult + "Kg";
+                                break;
+                            }else if (inputResult.matches("\\d+(\\.\\d+)?Kg")){
                                 parts[1] = inputResult;
                                 break;
-                            }else{
+                            }else
+                            {
                                 System.out.println("Weight must follow format: 0.0");
 
                                 System.out.print("Return?(Y/N): ");
@@ -255,12 +260,12 @@ public class PMContainer {
                         break;
                     }
                     case "Port ID":{
-                            TableInterface portsTable = PMPort.createTableFromDatabase();
+                            LineFilters filters = new LineFilters();
+                            filters.addFilter(1,parts[3],FiltersType.EXCLUDE);
+
+                            TableInterface portsTable = PMPort.createTableFromDatabase(filters);
 
                             System.out.println(portsTable);
-
-                            LineFilters filters = new LineFilters(FiltersType.EXCLUDE);
-                            filters.addFilter(4, parts[3]);
 
                             OptionsInterface portsInterface = PMPort.createOptionsInterfaceForPorts("Which port do you want to set?", filters);
 
@@ -280,7 +285,11 @@ public class PMContainer {
 
                 if(keepRunning){
                     String line = String.join(",", parts);
-                    boolean success = PortManagerMenu.updateLinesWithId(containersFilePath,parts[0],0, line);
+
+                    LineFilters lineFilters = new LineFilters();
+                    lineFilters.addFilter(1,parts[0],FiltersType.INCLUDE);
+
+                    boolean success = LinesHandler.updateLinesFromDatabase(containersFilePath, line,lineFilters);
                     if(success){
                         System.out.println("Update container " + parts[0] +  " successfully!");
 

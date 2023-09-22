@@ -1,8 +1,7 @@
 package Trip;
 
-import DatabaseLinesHandler.FiltersType;
-import DatabaseLinesHandler.LineFilters;
-import Menu.PortManagerMenu;
+import LinesHandler.FiltersType;
+import LinesHandler.LineFilters;
 import Port.PMPort;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
@@ -16,12 +15,12 @@ public class PMTrip {
     public static final String[] cols = {"ID", "Date Depart", "Date Arrived", "Depart Port", "Arrived Port", "Status"};
     public static final String tripsFilePath = "./src/database/tripsTri.txt";
     public static void createATrip(PMPort port){
-        TableInterface portsTable = PMPort.createTableFromDatabase();
+        LineFilters filters = new LineFilters();
+        filters.addFilter(1, port.getId(),FiltersType.EXCLUDE);
+
+        TableInterface portsTable = PMPort.createTableFromDatabase(filters);
 
         System.out.println(portsTable);
-
-        LineFilters filters = new LineFilters(FiltersType.EXCLUDE);
-        filters.addFilter(1, port.getId());
 
         OptionsInterface portsInterface = PMPort.createOptionsInterfaceForPorts("Choose a arrival port for this trip", filters);
 
@@ -32,10 +31,13 @@ public class PMTrip {
         if(!portOption.equals("Return")){
             String arrivalPortLine = interfaceData.get("data");
 
-            TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(port.getId());
+            filters = new LineFilters();
+            filters.addFilter(4,port.getId(),FiltersType.INCLUDE);
+
+            TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(filters);
             System.out.println(vehiclesTable);
 
-            OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Choose a vehicle for a trip", port.getId(), null);
+            OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Choose a vehicle for a trip",filters);
 
             interfaceData = vehiclesInterface.run(null);
 
@@ -184,6 +186,4 @@ public class PMTrip {
             }
         }
     }
-
-
 }

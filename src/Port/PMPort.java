@@ -1,10 +1,9 @@
 package Port;
 
 import Container.PMContainer;
-import DatabaseLinesHandler.FiltersType;
-import DatabaseLinesHandler.LineFilters;
-import DatabaseLinesHandler.LinesHandler;
-import Menu.PortManagerMenu;
+import LinesHandler.FiltersType;
+import LinesHandler.LineFilters;
+import LinesHandler.LinesHandler;
 import Trip.PMTrip;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
@@ -14,16 +13,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import static Menu.PortManagerMenu.updateLinesWithId;
-
 public class PMPort {
-    public static final String[] containersCols = {"ID","Name","Capacity","Landing Ability"};
+    public static final String[] portsCols = {"ID","Name","Capacity","Landing Ability"};
     public static final String portsFilePath = "./src/database/ports.txt";
     private String id;
     private String name;
     private String capacity;
     private String landingAbility;
+    public void checkIfPortCanAddContainer(String containerWeight){
+        LineFilters filters = new LineFilters();
+        filters.addFilter(4,containerWeight,FiltersType.INCLUDE);
+        ArrayList<String> containersLine = LinesHandler.getLinesFromDatabase(PMContainer.containersFilePath, filters);
 
+        double containersWeight = 0;
+
+        for(String line: containersLine){
+            String[] parts = line.split(",");
+
+            containersWeight = containersWeight + Double.parseDouble(parts[1]);
+        }
+
+        //double capacity = this.capacity[0];
+       // return this.capacity - containersWeight;
+    }
     public static OptionsInterface createOptionsInterfaceForPortsLandingTypes(String title){
         OptionsInterface landingTypesInterface = new OptionsInterface("askQuestion",title,2);
         landingTypesInterface.addOption(1,"Truck Availability",null,null);
@@ -52,10 +64,10 @@ public class PMPort {
 
         return portsInterface;
     }
-    public static TableInterface createTableFromDatabase(){
-        TableInterface table = new TableInterface("ports","Ports",containersCols,",");
+    public static TableInterface createTableFromDatabase(LineFilters lineFilters){
+        TableInterface table = new TableInterface("ports","Ports",portsCols,",");
 
-        ArrayList<String> lines = PortManagerMenu.getLinesFromDatabase(portsFilePath);
+        ArrayList<String> lines = LinesHandler.getLinesFromDatabase(portsFilePath, lineFilters);
 
         for(String line: lines){
             table.addRow(line);
@@ -76,8 +88,8 @@ public class PMPort {
     }
 
     private void getPortData(){
-        LineFilters lineFilters = new LineFilters(FiltersType.INCLUDE);
-        lineFilters.addFilter(1,  this.id);
+        LineFilters lineFilters = new LineFilters();
+        lineFilters.addFilter(1,  this.id,FiltersType.INCLUDE);
 
         ArrayList<String> lines = LinesHandler.getLinesFromDatabase(portsFilePath, lineFilters);
 
@@ -158,7 +170,10 @@ public class PMPort {
             }
 
             if(keepRunning){
-                boolean success = updateLinesWithId(portsFilePath, id,0, toString());
+                LineFilters filters = new LineFilters();
+
+                filters.addFilter(1,this.id,FiltersType.INCLUDE);
+                boolean success = LinesHandler.updateLinesFromDatabase(portsFilePath, toString(), filters);
 
                 if(success){
                     System.out.println("Updated port successfully!");
@@ -189,7 +204,7 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    TableInterface table = createTableFromDatabase();
+                    TableInterface table = createTableFromDatabase(null);
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
@@ -213,7 +228,10 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    TableInterface table = PMVehicle.createTableFromDatabase(this.id);
+                    LineFilters filters = new LineFilters();
+                    filters.addFilter(4,this.id,FiltersType.INCLUDE);
+
+                    TableInterface table = PMVehicle.createTableFromDatabase(filters);
                     System.out.println(table);
 
                     System.out.println("Go back?(Y/N)");
@@ -296,8 +314,8 @@ public class PMPort {
                 Scanner input = new Scanner(System.in);
 
                 while (true){
-                    LineFilters lineFilters = new LineFilters(FiltersType.INCLUDE);
-                    lineFilters.addFilter(4, this.id);
+                    LineFilters lineFilters = new LineFilters();
+                    lineFilters.addFilter(4, this.id,FiltersType.INCLUDE);
 
                     TableInterface table = PMContainer.createTableFromDatabase(lineFilters);
 

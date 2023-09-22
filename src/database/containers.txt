@@ -1,5 +1,5 @@
 #ID, Weight, Type, Port ID, Vehicle ID
-c-01, 3.6, Dry Storage, p-02,  null
+c-01,5.6Kg,Open Top,p-01,  null
 c-02, 3.2,Refrigerated,p-04, null
 c-03, 4.6, openTop, p-01,null
 c-04, 4.3, liquid, null, null

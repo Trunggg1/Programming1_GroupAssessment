@@ -1,11 +1,16 @@
 package Vehicle;
 
-import Menu.PortManagerMenu;
+import LinesHandler.FiltersType;
+import LinesHandler.LineFilters;
+import LinesHandler.LinesHandler;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.TableInterface;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class PMVehicle {
     public static final String[] vehiclesCols = {"ID","Name","Carrying Capacity","Current Fuel","Fuel Capacity","Current Port ID"};
@@ -17,75 +22,46 @@ public class PMVehicle {
     private String fuelCapacity;
     private String currentPort;
 
-    public static OptionsInterface createOptionsInterfaceForVehicles(String name, String portId, String excludedId) {
+    public static OptionsInterface createOptionsInterfaceForVehicles(String name, LineFilters lineFilters) {
         OptionsInterface containersInterface = new OptionsInterface("vehiclesInterface", name, 5);
 
-        ArrayList<String> lines;
-
-        if (portId != null) {
-            lines = PortManagerMenu.getLinesFromDatabaseById(vehiclesFilePath, portId, 5);
-        } else {
-            lines = PortManagerMenu.getLinesFromDatabase(vehiclesFilePath);
-        }
-
-        String trimmedExcludedId = "";
-
-        if (excludedId != null) {
-            trimmedExcludedId = excludedId.trim();
-        }
+        ArrayList<String> lines = LinesHandler.getLinesFromDatabase(vehiclesFilePath,lineFilters);
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             String[] parts = line.split(",");
 
-            if (!parts[0].trim().equals(trimmedExcludedId)) {
-                String vehicleName = parts[1].trim();
-                String vehicleId = parts[0].trim();
+            String vehicleName = parts[1].trim();
+            String vehicleId = parts[0].trim();
 
-                String optionName = vehicleName + "(" + vehicleId + ")";
+            String optionName = vehicleName + "(" + vehicleId + ")";
 
+            containersInterface.addOption(i + 1, optionName, line, null);
+
+            if (i == lines.size() - 1) {
                 containersInterface.addOption(i + 1, optionName, line, null);
-
-                if (i == lines.size() - 1) {
-                    containersInterface.addOption(i + 1, optionName, line, null);
-                    containersInterface.addOption(i + 2, "Return", null, null);
-                }
+                containersInterface.addOption(i + 2, "Return", null, null);
             }
         }
 
         return containersInterface;
     }
-    public static TableInterface createTableFromDatabase(String portId){
-        TableInterface table = new TableInterface("vehicles","Vehicles",vehiclesCols,",");
-
-        ArrayList<String> lines = PortManagerMenu.getLinesFromDatabase(vehiclesFilePath);
-
-        for (String line : lines) {
-            String[] parts = line.split(",");
-
-            if (portId != null) {
-                String id = parts[5].trim();
-                String trimmedPortID = portId.trim();
-
-                if (trimmedPortID.equals(id)) {
-                    table.addRow(line);
-                }
-            } else {
-                table.addRow(line);
-            }
-        }
-
-        return table;
+    public static TableInterface createTableFromDatabase(LineFilters lineFilters){
+        ArrayList<String> lines = LinesHandler.getLinesFromDatabase(vehiclesFilePath,lineFilters);
+        return LinesHandler.createTableFromLines(lines,"vehicles","Vehicles",vehiclesCols,",");
     }
     public static void updateVehicleFromDatabase(String portId){
         boolean keepRunning = true;
 
         while (keepRunning){
-            TableInterface table = createTableFromDatabase(portId);
+            LineFilters filters = new LineFilters();
+            filters.addFilter(4,portId, FiltersType.INCLUDE);
+
+            TableInterface table = createTableFromDatabase(filters);
 
             OptionsInterface vehiclesOption = new OptionsInterface("vehicles","Which vehicle to update?",2);
 
-            ArrayList<String> lines = PortManagerMenu.getLinesFromDatabase(vehiclesFilePath);
+            ArrayList<String> lines = LinesHandler.getLinesFromDatabase(vehiclesFilePath,filters);
 
             int count = 1;
 
@@ -118,10 +94,7 @@ public class PMVehicle {
                 option = interfaceData.get("option");
 
                 switch (option){
-                    case "Current fuel":{
-                        //Ask input
-                        //Update
-                        break;
+                    case "Current fuel": {
                     }
                     case "Return":{
                         keepRunning = false;
