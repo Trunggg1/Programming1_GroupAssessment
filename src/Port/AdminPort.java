@@ -34,12 +34,12 @@ public class AdminPort {
 
     public void getAllPortInfo() throws FileNotFoundException {
         ArrayList<String[]> user = new ArrayList<>();
-        Scanner fileProducts = new Scanner(new File("./src/database/ports.txt"));
+        Scanner filePorts = new Scanner(new File("./src/database/ports.txt"));
 
-        // The while loop is used to get info of each product in the scanner.
-        while (fileProducts.hasNext()) {
+        // while loop get info of each port in the scanner.
+        while (filePorts.hasNext()) {
             String[] portData = new String[3];
-            String line = fileProducts.nextLine();
+            String line = filePorts.nextLine();
             StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
             String ID = stringTokenizer.nextToken();
             String Name = stringTokenizer.nextToken();
@@ -64,12 +64,12 @@ public class AdminPort {
 
     public void getPortId() throws FileNotFoundException { //Display ports information with options to choose
         ArrayList<String[]> user = new ArrayList<>();
-        Scanner fileProducts = new Scanner(new File("./src/database/ports.txt"));
+        Scanner filePorts = new Scanner(new File("./src/database/ports.txt"));
 
         // Use tokenizer to pick data
-        while (fileProducts.hasNext()) {
+        while (filePorts.hasNext()) {
             String[] portData = new String[3];
-            String line = fileProducts.nextLine();
+            String line = filePorts.nextLine();
             StringTokenizer stringTokenizer = new StringTokenizer(line, ",");
             String ID = stringTokenizer.nextToken();
             String Name = stringTokenizer.nextToken();

@@ -22,25 +22,25 @@ public class TableInterface {
         TableInterface.rightAlign = rightAlign;
     }
 
-    // When you set the setShowVerticalLines to true, the border of the table will be set under the below format.
+    // When setShowVerticalLines equal true, the border of the table will be set under the below format.
     public static void setShowVerticalLines(boolean showVerticalLines) {
         verticalSep = showVerticalLines ? "|" : "";
-        joinSep = showVerticalLines ? "*" : " ";
+        joinSep = showVerticalLines ? "+" : " ";
     }
 
-    // Set header for the table
+    // Set header for the table interface
     public static void setHeaders(String... headers) {
         TableInterface.headers = headers;
     }
 
-    // Add new row for the table
+    // Add new row for the table interface
     public static void addRow(String... cells) {
         rows.add(cells);
     }
 
-    // Print the table
+    // Print the table interface
     public static void print() {
-        // If the user input the header, the header will become !=null and all the borders will be measured.*/
+        // the header will become !=null and all the borders will be measured when the user input header in system
         int[] maxWidths = headers != null ?
                 Arrays.stream(headers).mapToInt(String::length).toArray() : null;
 
@@ -56,7 +56,7 @@ public class TableInterface {
             }
         }
 
-        // If the user input the header, the header will become !=null and print out the table */
+        // the header will become !=null and print out the table
         if (headers != null) {
             printLine(maxWidths);
             printRow(headers, maxWidths);
@@ -70,7 +70,7 @@ public class TableInterface {
         }
     }
 
-    // This method is used to print the information in the line column.
+    // print the information in the line column
     private static void printLine(int[] columnWidths) {
         for (int i = 0; i < columnWidths.length; i++) {
             String line = String.join("", Collections.nCopies(columnWidths[i] +
@@ -80,7 +80,7 @@ public class TableInterface {
         System.out.println();
     }
 
-    // This method is used to print the information in the row column.
+    // print the information in the row column
     private static void printRow(String[] cells, int[] maxWidths) {
         for (int i = 0; i < cells.length; i++) {
             String s = cells[i];
