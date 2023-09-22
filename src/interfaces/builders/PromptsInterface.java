@@ -38,7 +38,7 @@ public class PromptsInterface extends Interface
             System.out.println(prompt);
             System.out.print("Input: ");
 
-            String inputResult = input.nextLine();
+            String inputResult = input.nextLine().trim();
 
             data.put(i, inputResult);
             i++;

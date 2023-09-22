@@ -37,6 +37,9 @@ public class TableInterface extends Interface {
 
         return  true;
     }
+    public void clearRows(){
+        this.rows.clear();
+    }
     public boolean setRow(int index, String line){
         String[] parts = getPartsFromLine(line);
 
