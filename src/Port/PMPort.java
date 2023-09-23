@@ -28,6 +28,8 @@ public class PMPort {
     private String name;
     private String capacity;
     private String landingAbility;
+    private String latitude;
+    private String longitude;
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {
         // Radius of the Earth in kilometers
         double earthRadius = 6371.0;
@@ -43,9 +45,8 @@ public class PMPort {
         double dlat = lat2 - lat1;
         double a = Math.pow(Math.sin(dlat / 2), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = earthRadius * c;
 
-        return distance;
+        return earthRadius * c;
     }
     public static double calculateDistanceBetweenPorts(String portOneId, String portTwoId){
         LineFilters filters = new LineFilters();
@@ -177,6 +178,8 @@ public class PMPort {
             this.name = parts[1];
             this.capacity = parts[2];
             this.landingAbility = parts[3];
+            this.latitude = parts[4];
+            this.longitude = parts[5];
         }
     }
 
@@ -439,11 +442,8 @@ public class PMPort {
                 PMTrip.createATrip(this);
                 break;
             }
-            case "Update a trip from database": {
-                PMTrip.updateTripFromPort();
-                break;
-            }case "Complete a trip": {
-                PMTrip.completeTrip();
+           case "Complete a trip": {
+                PMTrip.completeTrip(this);
                 break;
             }
             case "Display all trips from the port": {
@@ -465,15 +465,26 @@ public class PMPort {
             case "Port": {
                 break;
             }case "Containers": {
+                LineFilters filters = new LineFilters();
+                filters.addFilter(PMVehicle.colCurrentPortId, this.id, FiltersType.INCLUDE);
+                ArrayList<String> lines = LinesHandler.getLinesFromDatabase(PMVehicle.vehiclesFilePath, filters);
+
+                for(String line: lines){
+                    String[] parts = line.split(",");
+                    System.out.println("Id is " + parts[0]);
+                }
                 break;
             }
             case "Vehicles": {
+                //
                 break;
             }
             case "Trips": {
+                //
                 break;
             }
             case "Summary": {
+                //
                 break;
             }
         }

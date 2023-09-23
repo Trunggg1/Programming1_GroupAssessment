@@ -1,5 +1,5 @@
 #ID, Weight, Type, Port ID, Vehicle ID
-c-01,3560.0Kg,Open Top,p-01,null
+c-01,3560.0Kg,Open Top,null,btr-01
 c-02, 3000.0Kg,Refrigerated,p-02,null
 c-03, 2460.0Kg, openTop, p-03,null
 c-04, 3500.0Kg, liquid, p-04, null

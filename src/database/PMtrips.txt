@@ -1,2 +1,2 @@
-#ID, Date Depart, Date Arrived, Depart Port, Arrived Port,vehicleId, Status
-t-01, null, null, Long Khanh, District 7, a,Success
+Vehicle ID, Date Depart, Date Arrived, Depart Port, Arrived Port, Status
+btr-01,2023-09-23 16:51:21,null,p-01,p-02,Moving
