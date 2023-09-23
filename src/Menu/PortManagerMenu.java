@@ -4,6 +4,7 @@ import LinesHandler.FiltersType;
 import LinesHandler.LineFilters;
 import LinesHandler.LinesHandler;
 import Port.PMPort;
+import Trip.PMTrip;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import User.PortManager;
@@ -15,14 +16,14 @@ import java.util.*;
 public class PortManagerMenu {
     private PortManager user;
     private PMPort port;
-    private OptionsInterface mainInterface;
+    private OptionsInterface controlPanel;
     public PortManagerMenu() {}
     public void viewLogin(){
-        OptionsInterface menu = new OptionsInterface("portManagerLogin","Port Manager login",2);
-        menu.addOption(1,"Log in",null, null);
-        menu.addOption(2,"Return",null, null);
+        OptionsInterface loginMenu = new OptionsInterface("login","Port Manager login",2);
+        loginMenu.addOption(1,"Log in",null, null);
+        loginMenu.addOption(2,"Return",null, null);
 
-        HashMap<String, String> results = menu.run(null);
+        HashMap<String, String> results = loginMenu.run(null);
 
         String option = results.get("option");
 
@@ -112,11 +113,12 @@ public class PortManagerMenu {
 
         OptionsInterface tripsPanel = new OptionsInterface("tripsPanel","Trips Panel",3);
         tripsPanel.addOption(1,"Create a trip",null,null);
-        tripsPanel.addOption(2,"Update a trip from database",null,null);
-        tripsPanel.addOption(3,"Delete a trip from database",null,null);
-        tripsPanel.addOption(4,"Display all trips from the port",null,null);
-        tripsPanel.addOption(5,"Display all trips from database",null,null);
-        tripsPanel.addOption(6,"Go back",null,null);
+        tripsPanel.addOption(2,"Complete a trip",null,null);
+        tripsPanel.addOption(3,"Display all trips from the port",null,null);
+        tripsPanel.addOption(4,"Display all trips from database",null,null);
+        tripsPanel.addOption(5,"Display all trips from a given day",null,null);
+        tripsPanel.addOption(6,"Display all trips by days range",null,null);
+        tripsPanel.addOption(7,"Go back",null,null);
 
         OptionsInterface statisticPanel = new OptionsInterface("statisticPanel","Statistic Panel",4);
         statisticPanel.addOption(1,"Profile",null, null);
@@ -127,20 +129,22 @@ public class PortManagerMenu {
         statisticPanel.addOption(6,"Summary",null, null);
         statisticPanel.addOption(7,"Go back",null, null);
 
-        mainInterface = new OptionsInterface("controlPanel", "Control Panel", 4);
-        mainInterface.addOption(1,"Profile panel",null, profilePanel);
-        mainInterface.addOption(2,"Vehicles panel",null, vehiclesPanel);
-        mainInterface.addOption(3,"Containers panel",null, containersPanel);
-        mainInterface.addOption(4,"Port panel",null, portPanel);
-        mainInterface.addOption(5,"Trips panel",null, tripsPanel);
-        mainInterface.addOption(6,"Statistic",null, statisticPanel);
-        mainInterface.addOption(7,"Log out",null, null);
+        controlPanel = new OptionsInterface("controlPanel", "Control Panel", 4);
+        controlPanel.addOption(1,"Profile panel",null, profilePanel);
+        controlPanel.addOption(2,"Vehicles panel",null, vehiclesPanel);
+        controlPanel.addOption(3,"Containers panel",null, containersPanel);
+        controlPanel.addOption(4,"Port panel",null, portPanel);
+        controlPanel.addOption(5,"Trips panel",null, tripsPanel);
+        controlPanel.addOption(6,"Statistic",null, statisticPanel);
+        controlPanel.addOption(7,"Log out",null, null);
     }
     public void run(){
+        PMTrip.handleTripsHistory();
+
         String interfaceId = "mainInterface";
 
         while (true){
-            HashMap<String, String> interfaceData = mainInterface.run(interfaceId);
+            HashMap<String, String> interfaceData = controlPanel.run(interfaceId);
 
             String id = interfaceData.get("id");
             String option = interfaceData.get("option");

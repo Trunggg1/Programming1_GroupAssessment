@@ -1,5 +1,6 @@
 package Tools;
 public class Tools {
+    public static final String regexDate = "\\d{4}-\\d{2}-\\d{2}";
     public static final String regexDouble = "^-?\\d+(\\.\\d+)?$";
     public static final String regexWeightInKilogram = "\\s*?(?i)[kK]g\\s*?";
     public static final String regexGallon = "\\s*?[lL]\\s*?";

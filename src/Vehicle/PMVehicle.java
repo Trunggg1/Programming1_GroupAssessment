@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class PMVehicle {
+    public static final String regexTruckId = "btr-\\d+";
     public static final String[] vehiclesCols = {"ID","Name","Carrying Capacity","Current Fuel","Fuel Capacity","Current Port ID"};
     public static final int colId = 1;
     public static final int colName = 2;
