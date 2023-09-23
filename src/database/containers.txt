@@ -16,4 +16,4 @@ c-18, 160.0Kg, openSide,p-01,null
 c-19, 123.4Kg, Dry Storage,p-01,null
 c-20, 504.5Kg, liquid,p-02,null
 c-021, 10, Dry Storage,p-01,null
-c-22, 5900, liquid,p-01,null
+

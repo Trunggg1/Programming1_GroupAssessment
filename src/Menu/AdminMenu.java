@@ -1,5 +1,7 @@
 package Menu;
 
+import Container.AdminContainer;
+import Resource.ReadDatabase;
 import Resource.UserInput;
 import Port.AdminPort;
 import Vehicle.AdminVehicle;
@@ -8,6 +10,7 @@ import User.Admin;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -24,22 +27,22 @@ public class AdminMenu {
         Admin admin = new Admin();
         Authentication authentication = new Authentication();
         String option = UserInput.rawInput();
+
         switch (option) {
+
             case "1":
                 System.out.println("\n================================================= LOGIN FORM =================================================");
                 do {
                     // Ask user to input username and password
-                    // if the username and password are not correct, the system will ask user to input again
-                    // otherwise, the system will change to the homepage after login
                     Scanner scanner = new Scanner(System.in);
                     System.out.print("Enter username: ");
                     String username = scanner.nextLine();
                     System.out.print("Enter password: ");
                     String password = scanner.nextLine();
 
+                    // if the username and password are not correct, the system will ask user to input again
                     if (!admin.verifyAdmin(username, password)) {
-                        System.out.println("Wrong password, try again !!!!!");
-
+                        System.out.println("Wrong password, try again!");
                     } else {
                         this.viewHomepage();
                         validUser = true;
@@ -53,80 +56,199 @@ public class AdminMenu {
                 System.exit(1);
 
             default:
-                // If customer input another option that don't have in the menu
-                // then the system will give he/she message and back to the viewpage
+                // System give user message and back to the viewpage
                 System.out.println("THERE IS NO MATCHING RESULT, PLEASE TRY AGAIN!!!");
                 TimeUnit.SECONDS.sleep(1);
                 this.view();
         }
     }
 
-    // Display the homepage for admin when he/she log in successfully
+    // Admin homepage when user log in successfully
     public void viewHomepage() throws IOException, InterruptedException, ParseException {
         System.out.println("\n================================================= HOMEPAGE =================================================");
-        System.out.println("\n1. List all ports' information");
-        System.out.println("2. List all vehicles' information");
-        System.out.println("3. List all port managers' information");
-        System.out.println("4. List all containers information");
-        System.out.println("5. List all statistics");
-        System.out.println("7. Search port managers by ID");
-        System.out.println("8. Update ports");
-        System.out.println("9. Update vehicles");
-        System.out.println("10. Remove port manager by port manager ID");
-        System.out.println("11. Log out");
-        System.out.println("12. Exit");
+        System.out.println("1. Ports' information");
+        System.out.println("2. Vehicles' information");
+        System.out.println("3. Containers information");
+        System.out.println("4. Port managers' information");
+        System.out.println("5. Log out");
+        System.out.println("6. Exit");
 
         Scanner scanner = new Scanner(System.in);
         AdminPort Port = new AdminPort();
-        Admin admin = new Admin();
+        Admin User = new Admin();
         AdminVehicle Vehicle = new AdminVehicle();
         AdminMenu adminMenu = new AdminMenu();
-
+        AdminContainer Container = new AdminContainer();
         String choice = UserInput.rawInput();
+
         switch (choice) {
             case "1":
-                // Display the information of all Ports
-                Port.getAllPortInfo();
-                TimeUnit.SECONDS.sleep(1);
-                adminMenu.viewHomepage();
+                // Allow user view and update ports
+                System.out.println("\n================================================= PORT'S INFORMATION =================================================");
+                System.out.println("1. List all ports' information");
+                System.out.println("2. Add port");
+                System.out.println("3. Remove port");
+                System.out.println("4. Update ports' name");
+                System.out.println("5. Update ports' capacity");
+                System.out.println("6. Update ports' landing ability");
+                System.out.println("7. Back to homepage");
+                String portOptions = UserInput.rawInput();
 
-            case "2":
-                // Display the information of all Vehicle
-                Vehicle.getAllVehicleInfo();
-                TimeUnit.SECONDS.sleep(1);
-                adminMenu.viewHomepage();
-
-            /*case "3":
-                // Display the information of all Port Managers
-                admin.getAllPMInfo();
-                TimeUnit.SECONDS.sleep(1);
-                adminMenu.viewHomepage();
-
-             */
-
-            case "8":
-                // Allow user to add more product or remove any product
-                System.out.println("\n================================================= UPDATING PORT =================================================");
-                System.out.println("1. Add port");
-                System.out.println("2. Remove port");
-                System.out.println("3. Back to homepage");
-                String option = UserInput.rawInput();
-                switch (option) {
+                switch (portOptions) {
+                    // Display the information of all Ports
                     case "1":
-                        admin.addPort();
+                        Port.getAllPortInfo();
                         TimeUnit.SECONDS.sleep(1);
                         adminMenu.viewHomepage();
-                        adminMenu.viewHomepage();
 
+                        //Create new port
                     case "2":
-                        admin.deletePort();
+                        User.addPort();
                         TimeUnit.SECONDS.sleep(1);
                         adminMenu.viewHomepage();
+
+                        //Delete port
+                    case "3":
+                        User.deletePort();
+                        TimeUnit.SECONDS.sleep(1);
                         adminMenu.viewHomepage();
 
-                    case "3":
+                        //Update port's name
+                    case "4":
+                        Port.getAllPortInfo();
+                        System.out.print("Enter port's ID to update: ");
+                        String pnId = scanner.nextLine();
+                        System.out.println("Update port's name to:");
+                        String name = scanner.nextLine();
+                        Port.updatePortName("./src/database/ports.txt", name, pnId);
+                        adminMenu.viewHomepage();
+
+                        //Update port's capacity
+                    case "5":
+                        Port.getAllPortInfo();
+                        System.out.print("Enter port's ID to update: ");
+                        String pcId = scanner.nextLine();
+                        System.out.println("Update port's capacity to:");
+                        String capacity = scanner.nextLine();
+                        Port.updatePortCapacity("./src/database/ports.txt", capacity, pcId);
+                        adminMenu.viewHomepage();
+
+                        //Update port's landing ability
+                    case "6":
+                        Port.getAllPortInfo();
+                        System.out.print("Enter port's ID to update: ");
+                        String laId = scanner.nextLine();
+                        System.out.println("Update port's landing ability to:");
+                        String landingAbility = scanner.nextLine();
+                        Port.updatePortLandingAbility("./src/database/ports.txt", landingAbility, laId);
+                        adminMenu.viewHomepage();
+
+                        //Back to homepage
+                    case "7":
                         adminMenu.viewHomepage();
                 }
+
+            case "2":
+                // Allow user view and update ports
+                System.out.println("\n================================================= VEHICLE'S INFORMATION =================================================");
+                System.out.println("1. List all vehicles' information");
+                System.out.println("2. Add vehicle");
+                System.out.println("3. Remove vehicle");
+                System.out.println("4. Update vehicles' carrying capacity");
+                System.out.println("5. Back to homepage");
+                String vehicleOptions = UserInput.rawInput();
+
+                switch (vehicleOptions) {
+                    // Display the information of all vehicle
+                    case "1":
+                        Vehicle.getAllVehicleInfo();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Create vehicle
+                    case "2":
+                        User.addVehicle();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Delete new vehicle
+                    case "3":
+                        User.deleteVehicle();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Update vehicle's capacity
+                    case "4":
+                        Vehicle.getAllVehicleInfo();
+                        System.out.print("Enter vehicle's ID to update: ");
+                        String vcId = scanner.nextLine();
+                        System.out.println("Update vehicle's capacity to:");
+                        String capacity = scanner.nextLine();
+                        Vehicle.updateVehicleCapacity("./src/database/vehicles.txt", capacity, vcId);
+                        adminMenu.viewHomepage();
+
+                        //Back to homepage
+                    case "5":
+                        adminMenu.viewHomepage();
+                }
+
+            case "3":
+// Allow user view and update ports
+                System.out.println("\n================================================= CONTAINER'S INFORMATION =================================================");
+                System.out.println("1. List all containers' information");
+                System.out.println("2. Add container");
+                System.out.println("3. Remove container");
+                System.out.println("4. Update containers' weight");
+                System.out.println("5. Update containers' type");
+                System.out.println("6. Back to homepage");
+                String containerOptions = UserInput.rawInput();
+
+                switch (containerOptions) {
+                    // Display the information of all container
+                    case "1":
+                        Container.getAllContainerInfo();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Create new container
+                    case "2":
+                        User.addContainer();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Delete container
+                    case "3":
+                        User.deleteContainer();
+                        TimeUnit.SECONDS.sleep(1);
+                        adminMenu.viewHomepage();
+
+                        //Update container's weight
+                    case "4":
+                        Container.getAllContainerInfo();
+                        System.out.print("Enter container's ID to update: ");
+                        String cwId = scanner.nextLine();
+                        System.out.println("Update container's weight to:");
+                        String weight = scanner.nextLine();
+                        Container.updateContainerWeight("./src/database/containers.txt", weight, cwId);
+                        adminMenu.viewHomepage();
+
+                        //Update vehicle's capacity
+                    case "5":
+                        Container.getAllContainerInfo();
+                        System.out.print("Enter container's ID to update: ");
+                        String ctId = scanner.nextLine();
+                        System.out.println("Update container's type to:");
+                        String type = scanner.nextLine();
+                        Vehicle.updateVehicleType("./src/database/vehicles.txt", type, ctId);
+                        adminMenu.viewHomepage();
+
+                        //Back to homepage
+                    case "6":
+                        adminMenu.viewHomepage();
+                }
+
+
+
         }
     }
 }

@@ -8,28 +8,24 @@ import java.util.ArrayList;
 
 public class WriteFile {
 
-    // This method will rewrite all content in a specific file
+    // rewrite all content in a specific file
     public static void rewriteFile(String filepath, String header, String data) throws IOException {
         FileWriter newFile = new FileWriter(filepath, true);
         BufferedReader bufferedReader = new BufferedReader(new FileReader(filepath));
 
-        if (filepath.length() == 0) {
-            // This will check the file, if the file is completely blank,
-            // it will then write in the header first, after that it will
-            // move to the next row and await for further move.
-            newFile.append(header);
-            newFile.append("\n");
+        if (filepath.length() == 0) { // check if data is empty
+            newFile.append(header); // write header
+            newFile.append("\n"); // append for next command
         }
         bufferedReader.close();
 
         try {
-            // This will use an empty ArrayList, that will then take another data
-            // from another ArrayList that is within another method that this method support.
+            // empty arraylist await to assigned
             ArrayList<String> newDatabase = new ArrayList<>();
 
             newDatabase.add(data);
 
-            // This will then take the new data that this method's ArrayList and write them back into the file.
+            // write data into new arraylist
             for (String s : newDatabase) {
                 newFile.append(s);
                 newFile.append("\n");
