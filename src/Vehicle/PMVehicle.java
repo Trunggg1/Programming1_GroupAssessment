@@ -111,7 +111,7 @@ public class PMVehicle {
             }
         }
     }
-    public static void unloadContainter(String portId){
+    public static void unloadContainer(String portId){
         boolean keepRunning = true;
 
         while (keepRunning){
@@ -148,11 +148,23 @@ public class PMVehicle {
                     String containerLine = interfaceData.get("data");
                     String[] containersPart = containerLine.split(",");
 
-                    String containerId = containersPart[0];
+                    String containerId = containersPart[PMContainer.colId-1];
                     double containerWeight =  Tools.stringWeightToDouble(containersPart[PMContainer.colWeight-1]);
 
                     if(PMPort.canStoreContainer(portId,containerWeight)){
+                        containersPart[PMContainer.colPortId-1] = portId;
+                        containersPart[PMContainer.colVehicleId-1] = null;
 
+                        String newLine = String.join(",",containersPart);
+
+                        filters = new LineFilters();
+                        filters.addFilter(PMContainer.colId,containerId, FiltersType.INCLUDE);
+
+                        LinesHandler.updateLinesFromDatabase(PMContainer.containersFilePath,newLine,filters);
+
+                        System.out.println("Successfully unload container " + containerId + " from " + vehicleId + " to port" + portId + "!");
+
+                        System.out.println(PMContainer.createTableFromDatabase(filters));
                     }else{
                         System.out.println("Failed to unload because port reached weight limit!");
                     }

@@ -296,7 +296,7 @@ public class PMPort {
     public void handleVehicleOptions(String option) {
         switch (option){
             case "Unload a container": {
-                PMVehicle.unloadContainter(this.id);
+                PMVehicle.unloadContainer(this.id);
                 break;
             }
             case "Load a container": {

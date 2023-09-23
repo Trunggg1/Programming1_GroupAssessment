@@ -40,7 +40,7 @@ public class PMContainer {
     }
     public static ArrayList<String> getContainersFromVehicle(String vehicleId){
         LineFilters filers = new LineFilters();
-        filers.addFilter(5,vehicleId,FiltersType.INCLUDE);
+        filers.addFilter(colVehicleId,vehicleId,FiltersType.INCLUDE);
         return LinesHandler.getLinesFromDatabase(containersFilePath,filers);
     }
     public static TableInterface createTableFromDatabase(LineFilters lineFilters){

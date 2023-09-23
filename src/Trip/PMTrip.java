@@ -143,8 +143,6 @@ public class PMTrip {
         return weight;
     }
     public static void createATrip(PMPort port){
-        System.out.println(getCurrentDate());
-
         LineFilters filters = new LineFilters();
         filters.addFilter(1, port.getId(),FiltersType.EXCLUDE);
 
@@ -163,10 +161,9 @@ public class PMTrip {
             String[] arrivalPortParts = arrivalPortLine.split(",");
 
             filters = new LineFilters();
-            filters.addFilter(6,port.getId(),FiltersType.INCLUDE);
+            filters.addFilter(PMVehicle.colCurrentPortId,port.getId(),FiltersType.INCLUDE);
 
-            TableInterface vehiclesTable = PMVehicle.createTableFromDatabase(filters);
-            System.out.println(vehiclesTable);
+            System.out.println(PMVehicle.createTableFromDatabase(filters));
 
             OptionsInterface vehiclesInterface = PMVehicle.createOptionsInterfaceForVehicles("Choose a vehicle for the trip",filters);
 
@@ -178,15 +175,13 @@ public class PMTrip {
                 String vehicleLine = interfaceData.get("data");
                 String[] vehicleParts = vehicleLine.split(",");
 
-                checkPortLandingCapacity(port.getId(),arrivalPortParts[0]);
-
-                double arrivalPortRemainingCapacity = PMPort.getRemainingCapacity(arrivalPortParts[0]);
-                double portsDistance = PMPort.calculateDistanceBetweenPorts(port.getId(),arrivalPortParts[0]);
+                double arrivalPortRemainingCapacity = PMPort.getRemainingCapacity(arrivalPortParts[PMPort.colId-1]);
+                double portsDistance = PMPort.calculateDistanceBetweenPorts(port.getId(),arrivalPortParts[PMPort.colId-1]);
 
                 ArrayList<String> containersLine = PMContainer.getContainersFromVehicle(vehicleParts[0]);
 
                 if(containersLine.isEmpty()){
-                    System.out.println("Please load atleast one container on the vehicle before starting a trip!");
+                    System.out.println("Please load at least one container on the vehicle before starting a trip!");
                 }else{
                     double containersWeights = calculateContainersWeight(containersLine);
                     double consumption = calculateFuelConsumption(vehicleParts,portsDistance,containersLine);

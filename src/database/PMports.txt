@@ -1,5 +1,5 @@
 #ID, Name, Capacity, Landing Ability, Latitude, Longitude
-p-01, District 8, 10000Kg,Unavailability, 40.7128,-74.0060
+p-01, District 8, 50000Kg,Unavailability, 40.7128,-74.0060
 p-02,District 7,100000kg,Truck Available, 34.0522,-118.2437
 p-03,Vung Tau,100000kg, UnAvailable, -33.8654,151.2093
 p-04,Phan Thiet,100000kg,Truck Available, 51.5074,-0.1278
