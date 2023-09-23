@@ -1,5 +1,9 @@
 package User.abstracts;
 
+import LinesHandler.LineFilters;
+import LinesHandler.LinesHandler;
+import LinesHandler.FiltersType;
+
 import java.util.Scanner;
 
 public abstract class User {
@@ -31,9 +35,22 @@ public abstract class User {
         String newPassword = scanner.nextLine();
 
         // Update the password in the database
-        this.password = newPassword;
+        LineFilters filters = new LineFilters();
+        filters.addFilter(1,username, FiltersType.INCLUDE);
+        String userLine = LinesHandler.getLinesFromDatabase(usersFilePath,filters).get(0);
+
+        String[] userParts = userLine.split(",");
+
+        userParts[1] = newPassword;
+
+        String newLine = String.join(",",userParts);
+
+        LinesHandler.updateLinesFromDatabase(usersFilePath,newLine,filters);
+
+
 
         System.out.println("Password changed successfully.");
+        this.password = newPassword;
     }
     public void changeUsername() {
         Scanner scanner = new Scanner(System.in);
@@ -53,9 +70,20 @@ public abstract class User {
         String newUsername = scanner.nextLine();
 
         // Update the username in the database
-        this.username = newUsername;
+        LineFilters filters = new LineFilters();
+        filters.addFilter(1,username, FiltersType.INCLUDE);
+        String userLine = LinesHandler.getLinesFromDatabase(usersFilePath,filters).get(0);
+
+        String[] userParts = userLine.split(",");
+
+        userParts[0] = newUsername;
+
+        String newLine = String.join(",",userParts);
+
+        LinesHandler.updateLinesFromDatabase(usersFilePath,newLine,filters);
 
         System.out.println("Username changed successfully.");
+        this.username = newUsername;
     }
 
     public void handleProfileOptions(String option) {

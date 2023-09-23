@@ -4,6 +4,7 @@ import Container.PMContainer;
 import LinesHandler.FiltersType;
 import LinesHandler.LineFilters;
 import LinesHandler.LinesHandler;
+import Tools.Tools;
 import Trip.PMTrip;
 import Vehicle.PMVehicle;
 import interfaces.builders.OptionsInterface;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class PMPort {
+    public  static String regexCapacity = "(?i)[kK]g";
     public static final String[] portsCols = {"ID","Name","Capacity","Landing Ability","Latitude","Longitude"};
     public static final int colId = 1;
     public static final int colName = 2;
@@ -80,12 +82,34 @@ public class PMPort {
 
         for(String line: containersLine){
             String[] parts = line.split(",");
-            containersWeight = containersWeight + Double.parseDouble(parts[1].replaceAll("(?i)kg", ""));
+            containersWeight = containersWeight + Tools.stringWeightToDouble(parts[1]);
         }
 
-        double capacity = Double.parseDouble(portData[2].replaceAll("(?i)kg", ""));
+        double capacity = Double.parseDouble(portData[2].replaceAll(regexCapacity, ""));
 
         return capacity  - containersWeight;
+    }
+    public static boolean canStoreContainer(String portId, double containerWeight){
+        LineFilters filters = new LineFilters();
+
+        filters.addFilter(1,portId,FiltersType.INCLUDE);
+        String portLine = LinesHandler.getLinesFromDatabase(portsFilePath, filters).get(0);
+        String[] portData = portLine.split(",");
+
+        filters = new LineFilters();
+        filters.addFilter(4,portId,FiltersType.INCLUDE);
+        ArrayList<String> containersLine = LinesHandler.getLinesFromDatabase(PMContainer.containersFilePath, filters);
+
+        double containersWeight = containerWeight;
+
+        for(String line: containersLine){
+            String[] parts = line.split(",");
+            containersWeight = containersWeight + Tools.stringWeightToDouble(parts[1]);
+        }
+
+        double capacity = Tools.stringWeightToDouble(portData[2]);
+
+        return containersWeight < capacity;
     }
     public static OptionsInterface createOptionsInterfaceForPortsLandingTypes(String title){
         OptionsInterface landingTypesInterface = new OptionsInterface("askQuestion",title,2);
@@ -272,7 +296,7 @@ public class PMPort {
     public void handleVehicleOptions(String option) {
         switch (option){
             case "Unload a container": {
-                PMVehicle.unloadContainter();
+                PMVehicle.unloadContainter(this.id);
                 break;
             }
             case "Load a container": {
@@ -288,7 +312,7 @@ public class PMPort {
 
                 while (true){
                     LineFilters filters = new LineFilters();
-                    filters.addFilter(4,this.id,FiltersType.INCLUDE);
+                    filters.addFilter(PMVehicle.colCurrentPortId,this.id,FiltersType.INCLUDE);
 
                     TableInterface table = PMVehicle.createTableFromDatabase(filters);
                     System.out.println(table);

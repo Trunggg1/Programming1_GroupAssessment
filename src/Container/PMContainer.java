@@ -4,6 +4,7 @@ import LinesHandler.FiltersType;
 import LinesHandler.LineFilters;
 import LinesHandler.LinesHandler;
 import Port.PMPort;
+import Tools.Tools;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import interfaces.builders.TableInterface;
@@ -14,6 +15,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class PMContainer {
+    public static final String regexId = "^c-\\d+$";
     public static final String[] containersCols = {"ID","Weight","Type","Port ID", "Vehicle ID"};
     public static final int colId = 1;
     public static final int colWeight = 2;
@@ -46,23 +48,22 @@ public class PMContainer {
         return LinesHandler.createTableFromLines(lines, "containersList", "Containers list", containersCols, ",");
     }
     public static OptionsInterface createOptionsInterfaceForContainers(String name, LineFilters lineFilters){
-        OptionsInterface containersInterface = new OptionsInterface("containersInterface",name, 5);
-
         ArrayList<String> lines = LinesHandler.getLinesFromDatabase(containersFilePath, lineFilters);
 
-        for(int i = 0; i < lines.size(); i++){
-            String line = lines.get(i);
+        int width = Math.min(lines.size() + 1, 5);
+
+        OptionsInterface containersInterface = new OptionsInterface("containersInterface",name, width);
+
+        int i = 1;
+
+        for(String line: lines){
             String[] parts = line.split(",");
-
             String optionName = parts[0].trim() + "(" + parts[1].trim() + ")";
-
-            containersInterface.addOption(i + 1,optionName,line,null);
-
-            if(i == lines.size() - 1){
-                containersInterface.addOption(i + 1,optionName,line,null);
-                containersInterface.addOption(i + 2,"Return",null,null);
-            }
+            containersInterface.addOption(i,optionName,line,null);
+            i++;
         }
+
+        containersInterface.addOption(i,"Return",null,null);
 
         return containersInterface;
     }
@@ -80,13 +81,11 @@ public class PMContainer {
         while (true){
             HashMap<Number, String> results = prompt.startPrompts();
 
-            String idPattern = "^c-\\d+$";
-
             id = results.get(1);
-            weight = results.get(2);
+            weight = results.get(2).replaceAll(Tools.regexWeightInKilogram,"");
 
-            if(!id.matches(idPattern)){
-                System.out.println("Id must follow this format: c-00");
+            if(!id.matches(regexId)){
+                System.out.println("ID must follow this format: c-00");
             }else if(!weight.matches("^-?\\d+(\\.\\d+)?$")){
                 System.out.println("Weight has to be a double value");
             }else{
@@ -108,24 +107,35 @@ public class PMContainer {
 
         String type = interfaceData.get("option");
 
-        String line;
-
+        String line = null;
+        
+        double containerWeight = Double.parseDouble(weight.replaceAll(Tools.regexWeightInKilogram,""));
+        
+        boolean addContainer = false;
+        
         if(addContainerToPort){
-            //Check port capacity
-            line = id + ", " + weight + ", " + type + "," + portId + "," + "null";
+            if(PMPort.canStoreContainer(portId,containerWeight)){
+                line = id + ", " + weight + ", " + type + "," + portId + "," + "null";
+                addContainer = true;
+            }else{
+                System.out.println("Can't add the container because the port reached max capacity!");
+            }
         }else{
             line = id + ", " + weight + ", " + type + "," + "null" + "," + "null";
+            addContainer = true;
         }
 
-        boolean success = LinesHandler.addLineToDatabase(containersFilePath, line);
+        if(addContainer){
+            boolean success = LinesHandler.addLineToDatabase(containersFilePath, line);
 
-        if(success){
-            System.out.println("Successfully added container to database!");
-            table = createTableFromDatabase(null);
+            if(success){
+                System.out.println("Successfully added container to database!");
+                table = createTableFromDatabase(null);
 
-            System.out.println(table);
-        }else{
-            System.out.println("Failed to add container to database!");
+                System.out.println(table);
+            }else{
+                System.out.println("Failed to add container to database!");
+            }
         }
     }
     public static void deleteContainerFromDatabase() {
