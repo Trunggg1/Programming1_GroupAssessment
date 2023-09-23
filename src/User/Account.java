@@ -4,34 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Account {
-    // Attributes
-    private String cID;
-    private String name;
-    private String email;
-    private String address;
-    private String phone;
-    private String customerType;
-    private String username;
-    private String password;
-    private Long totalSpending;
-    private Long totalPoint;
-
-    // Constructor
-    public Account(String cID, String name, String email, String address, String phone,
-                   String customerType, String userName, String password, Long totalSpending, Long totalPoint) {
-        this.cID = cID;
-        this.name = name;
-        this.email = email;
-        this.address = address;
-        this.phone = phone;
-        this.customerType = customerType;
-        this.username = userName;
-        this.password = password;
-        this.totalSpending = totalSpending;
-        this.totalPoint = totalPoint;
-    }
-
-    // Constructor
     public Account() {
     }
 

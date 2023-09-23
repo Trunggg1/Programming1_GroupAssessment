@@ -1,7 +1,7 @@
 #id, weight, type, portId
-c-01, 1.5, dryStorage, p-01
-c-02, 3.2, refrigerated,null
-c-03, 4.6, openTop, null
-c-04, 4.3, liquid, null
-c-05, 2.5, openSide, null
-c-101, 5.6, Dry Storage, p-01
+c-01,134.5kg,Dry Storage,p-01
+c-02,345.2kg,Refrigerated,null
+c-03,434.6kg,Open Top,null
+c-04,423.3kg,Liquid,null
+c-05,223.5kg,Open Side,null
+c-07,100kg,Open Top,p-01

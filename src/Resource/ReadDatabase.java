@@ -14,12 +14,11 @@ public class ReadDatabase {
         ArrayList<String> colData = new ArrayList<>();
 
         try {
-            // will read a specific text file in a particular method when using this method to support that method.
+            // read a specific text file
             FileReader fileReader = new FileReader(filepath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            // while reading that file, if the reader contact a symbol that is set in another method that this method supported
-            // it will then break, skip all other columns except for one column that is asked to read.
+            // Break and skip data when encounter an assigned symbol (in this most of the cases, it will be the comma ","
             while ((currentLine = bufferedReader.readLine()) != null) {
                 data = currentLine.split(delimiter);
                 colData.add(data[col]);
@@ -30,19 +29,18 @@ public class ReadDatabase {
         return colData.toArray(new String[0]);
     }
 
-    // Read all of a file's content lines
+    // Read all data
     public static ArrayList<String[]> readAllLines(String filepath) {
         String[] data;
         String currentLine;
         ArrayList<String[]> allFileData = new ArrayList<>();
 
         try {
-            // Will read a specific text file in a particular method when using this method to support that method.
+            // read a specific text file
             FileReader fileReader = new FileReader(filepath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            // While reading that file, if the reader contact a "," it will then break,
-            // so it will be much easier to add into an ArrayList later on when support another method.
+            // Break when encounter ","
             while ((currentLine = bufferedReader.readLine()) != null) {
                 data = currentLine.split(",");
                 allFileData.add(data);
@@ -59,13 +57,11 @@ public class ReadDatabase {
         String currentLine;
 
         try {
-            // will read a specific text file in a particular method when using this method to support that method.
+            // read a specific text file
             FileReader fileReader = new FileReader(filepath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            // If a symbol set in a different manner than the one this method supports is encountered when reading that file,
-            // the reader will break and skip all other lines except for the one that is requested to be read.
-            // Additionally, it will look at a certain column to determine which one the requested line is in.
+           // break and skip lines except assigned symbols were set
             while ((currentLine = bufferedReader.readLine()) != null) {
                 lineData = currentLine.split(delimiter);
                 if (lineData[col].equals(search)) {

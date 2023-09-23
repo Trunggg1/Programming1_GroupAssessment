@@ -1,6 +1,5 @@
-#ID, Name, Carrying Capacity, Current Fuel, Fuel Capacity, Current Port
-btr-01, Reefer Truck 1, 7000kg, 56L, 70L, Long Khanh
-btr-02, Normal Truck 1, 7000kg, 56L, 70L, Long Khanh
-btr-03, Tanker Truck 1, 7000kg, 56L, 70L, Long Khanh
-s-04, Ship 1, 9000kg, 100L, 70L, Long Khanh
-s-05, Ship 2, 8000kg, 90L, 70L, Long Khanh
+#ID, Type,Carrying Capacity, Current Fuel, Fuel Capacity, Current Port
+rtr-01,Reefer Truck 1,7000kg,56%,70L,Long Khanh
+btr-02,Basic Truck 1,7000kg,56%,70L,Vung Tau
+ttr-03,Tanker Truck 1,7000kg,56%, 0L,Da Nang
+sh-04,Ship 1,9000kg,100%,70L,Long Khanh
