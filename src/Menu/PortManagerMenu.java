@@ -4,6 +4,7 @@ import LinesHandler.FiltersType;
 import LinesHandler.LineFilters;
 import LinesHandler.LinesHandler;
 import Port.PMPort;
+import Trip.PMTrip;
 import interfaces.builders.OptionsInterface;
 import interfaces.builders.PromptsInterface;
 import User.PortManager;
@@ -115,7 +116,9 @@ public class PortManagerMenu {
         tripsPanel.addOption(2,"Complete a trip",null,null);
         tripsPanel.addOption(3,"Display all trips from the port",null,null);
         tripsPanel.addOption(4,"Display all trips from database",null,null);
-        tripsPanel.addOption(5,"Go back",null,null);
+        tripsPanel.addOption(5,"Display all trips from a given day",null,null);
+        tripsPanel.addOption(6,"Display all trips by days range",null,null);
+        tripsPanel.addOption(7,"Go back",null,null);
 
         OptionsInterface statisticPanel = new OptionsInterface("statisticPanel","Statistic Panel",4);
         statisticPanel.addOption(1,"Profile",null, null);
@@ -136,6 +139,8 @@ public class PortManagerMenu {
         mainInterface.addOption(7,"Log out",null, null);
     }
     public void run(){
+        PMTrip.handleTripsHistory();
+
         String interfaceId = "mainInterface";
 
         while (true){

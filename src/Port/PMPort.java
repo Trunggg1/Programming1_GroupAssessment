@@ -479,6 +479,14 @@ public class PMPort {
                 }
                 break;
             }
+            case "Display all trips from a given day": {
+                PMTrip.displayAllTripsByGivenDay();
+                break;
+            }
+            case "Display all trips by days range":{
+                PMTrip.displayAllTripsByDaysRange();
+                break;
+            }
         }
     }
     public void handleStatisticOptions(String option) {

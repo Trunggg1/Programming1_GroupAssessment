@@ -289,10 +289,134 @@ public class PMTrip {
             System.out.println("Completed trip for " + vehicleId + " arrived to " + port.getId());
         }
     }
-    public static void displayTripsByGivenDay(){
-        OptionsInterface dateMenu = new OptionsInterface("date","dateMenu",2);
-    }
-    public static void displayTripsByDaysRange(){
+    public static void displayAllTripsByGivenDay(){
+        while (true){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+            PromptsInterface question = new PromptsInterface("askQuestion","Date input");
+            question.addPrompt("Enter date with this format(yyyy-MM-dd)");
+
+            HashMap<Number, String> results = question.startPrompts();
+
+            String date = results.get(1);
+
+            TableInterface table = new TableInterface("trips","Trips on " + date,tripCols,",");
+
+            if(date.matches(Tools.regexDate)){
+                LocalDate inputDate = LocalDate.parse(date, formatter);
+
+                ArrayList<String> lines = LinesHandler.getLinesFromDatabase(PMTrip.tripsFilePath, null);
+                for(String line: lines){
+                    String[] parts = line.split(",");
+                    String departureDate = parts[colDateDepart-1].trim();
+
+                    if(!departureDate.equals("null")){
+                        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime departDateTime = LocalDateTime.parse(departureDate, formatter);
+                        LocalDate departDate = departDateTime.toLocalDate();
+
+                        if(departDate.equals(inputDate)){
+                            table.addRow(line);
+                        }
+                    }
+                }
+
+                System.out.println(table);
+
+                Scanner input = new Scanner(System.in);
+
+                System.out.println("Go back?(Y/N)");
+
+                String inputResult = input.next();
+
+                if(inputResult.equals("Y") || inputResult.equals("y")){
+                    break;
+                }
+            }else{
+                System.out.println("Please enter correct date format yyyy-MM-dd");
+            }
+        }
+    }
+    public static void displayAllTripsByDaysRange(){
+        while (true){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            PromptsInterface question = new PromptsInterface("askQuestion","Date input");
+            question.addPrompt("Enter starting date with this format(yyyy-MM-dd)");
+            question.addPrompt("Enter ending date with this format(yyyy-MM-dd)");
+
+            HashMap<Number, String> results = question.startPrompts();
+
+            String startingDate = results.get(1);
+            String endingDate = results.get(2);
+
+            TableInterface table = new TableInterface("trips","Trips from " + startingDate + "\nTo " + endingDate,tripCols,",");
+
+            if(startingDate.matches(Tools.regexDate) && endingDate.matches(Tools.regexDate)){
+                LocalDate inputStartingDate = LocalDate.parse(startingDate,formatter);
+                LocalDate inputEndingDate = LocalDate.parse(endingDate,formatter);
+
+                ArrayList<String> lines = LinesHandler.getLinesFromDatabase(PMTrip.tripsFilePath, null);
+                for(String line: lines){
+                    String[] parts = line.split(",");
+                    String departureDate = parts[colDateDepart-1].trim();
+
+                    if(!departureDate.equals("null")){
+                        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                        LocalDateTime departDateTime = LocalDateTime.parse(departureDate, formatter);
+                        LocalDate departDate = departDateTime.toLocalDate();
+
+                        if(departDate.equals(inputStartingDate)){
+                            table.addRow(line);
+                        }else if(departDate.equals(inputEndingDate)){
+                            table.addRow(line);
+                        }else if(departDate.isAfter(inputStartingDate) && departDate.isBefore(inputEndingDate)){
+                            table.addRow(line);
+                        }
+                    }
+                }
+
+                System.out.println(table);
+
+                Scanner input = new Scanner(System.in);
+
+                System.out.println("Go back?(Y/N)");
+
+                String inputResult = input.next();
+
+                if(inputResult.equals("Y") || inputResult.equals("y")){
+                    break;
+                }
+            }else{
+                System.out.println("Please enter correct date format yyyy-MM-dd");
+            }
+        }
+    }
+    public static void handleTripsHistory(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        ArrayList<String> lines = LinesHandler.getLinesFromDatabase(tripsFilePath, null);
+
+        for(String line: lines){
+            String[] parts = line.split(",");
+
+            String dateArrived = parts[colDateArrived-1];
+
+            if(!dateArrived.equals("null")){
+                LocalDateTime dateArrivedTime = LocalDateTime.parse(dateArrived,formatter);
+
+                String date = getCurrentDate();
+                LocalDateTime dateTimeNow = LocalDateTime.parse(date, formatter);
+
+                LocalDateTime sevenDaysAgo = dateTimeNow.minusDays(7);
+
+                if(dateArrivedTime.equals(sevenDaysAgo) || dateArrivedTime.isBefore(sevenDaysAgo)){
+                    LineFilters filters = new LineFilters();
+                    filters.addFilter(colDateArrived,dateArrived,FiltersType.INCLUDE);
+                    LinesHandler.deleteLinesWithId(tripsFilePath,filters);
+                }
+            }
+
+        }
     }
 }
