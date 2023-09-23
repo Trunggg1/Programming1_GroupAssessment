@@ -1,5 +1,4 @@
 #ID, Weight, Type, Port ID, Vehicle ID
-c-01,560.0Kg,Open Top,p-02,null
 c-02, 250.0Kg,Refrigerated,p-02,null
 c-03, 300.0Kg, openTop, p-03,null
 c-04, 200.0Kg, liquid, p-04, null
@@ -17,3 +16,4 @@ c-18, 160.0Kg, openSide,p-01,null
 c-19, 123.4Kg, Dry Storage,p-01,null
 c-20, 504.5Kg, liquid,p-02,null
 c-021, 10, Dry Storage,p-01,null
+c-22, 5900, liquid,p-01,null

@@ -16,14 +16,14 @@ import java.util.*;
 public class PortManagerMenu {
     private PortManager user;
     private PMPort port;
-    private OptionsInterface mainInterface;
+    private OptionsInterface controlPanel;
     public PortManagerMenu() {}
     public void viewLogin(){
-        OptionsInterface menu = new OptionsInterface("portManagerLogin","Port Manager login",2);
-        menu.addOption(1,"Log in",null, null);
-        menu.addOption(2,"Return",null, null);
+        OptionsInterface loginMenu = new OptionsInterface("login","Port Manager login",2);
+        loginMenu.addOption(1,"Log in",null, null);
+        loginMenu.addOption(2,"Return",null, null);
 
-        HashMap<String, String> results = menu.run(null);
+        HashMap<String, String> results = loginMenu.run(null);
 
         String option = results.get("option");
 
@@ -129,14 +129,14 @@ public class PortManagerMenu {
         statisticPanel.addOption(6,"Summary",null, null);
         statisticPanel.addOption(7,"Go back",null, null);
 
-        mainInterface = new OptionsInterface("controlPanel", "Control Panel", 4);
-        mainInterface.addOption(1,"Profile panel",null, profilePanel);
-        mainInterface.addOption(2,"Vehicles panel",null, vehiclesPanel);
-        mainInterface.addOption(3,"Containers panel",null, containersPanel);
-        mainInterface.addOption(4,"Port panel",null, portPanel);
-        mainInterface.addOption(5,"Trips panel",null, tripsPanel);
-        mainInterface.addOption(6,"Statistic",null, statisticPanel);
-        mainInterface.addOption(7,"Log out",null, null);
+        controlPanel = new OptionsInterface("controlPanel", "Control Panel", 4);
+        controlPanel.addOption(1,"Profile panel",null, profilePanel);
+        controlPanel.addOption(2,"Vehicles panel",null, vehiclesPanel);
+        controlPanel.addOption(3,"Containers panel",null, containersPanel);
+        controlPanel.addOption(4,"Port panel",null, portPanel);
+        controlPanel.addOption(5,"Trips panel",null, tripsPanel);
+        controlPanel.addOption(6,"Statistic",null, statisticPanel);
+        controlPanel.addOption(7,"Log out",null, null);
     }
     public void run(){
         PMTrip.handleTripsHistory();
@@ -144,7 +144,7 @@ public class PortManagerMenu {
         String interfaceId = "mainInterface";
 
         while (true){
-            HashMap<String, String> interfaceData = mainInterface.run(interfaceId);
+            HashMap<String, String> interfaceData = controlPanel.run(interfaceId);
 
             String id = interfaceData.get("id");
             String option = interfaceData.get("option");
