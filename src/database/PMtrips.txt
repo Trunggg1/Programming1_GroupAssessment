@@ -1,2 +1,4 @@
 Vehicle ID, Date Depart, Date Arrived, Depart Port, Arrived Port, Status
-btr-01,2023-09-23 16:51:21,null,p-01,p-02,Moving
+btr-01,2023-09-23 16:51:21,2023-09-23 17:25:50,p-01,p-02,Landed
+btr-03,2023-09-23 17:44:17,2023-09-23 17:53:14,p-01,p-02,Landed
+btr-02,2023-09-23 17:51:14,2023-09-23 17:53:41,p-01,p-02,Landed

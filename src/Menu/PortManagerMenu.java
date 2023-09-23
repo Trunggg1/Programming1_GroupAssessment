@@ -113,9 +113,9 @@ public class PortManagerMenu {
         OptionsInterface tripsPanel = new OptionsInterface("tripsPanel","Trips Panel",3);
         tripsPanel.addOption(1,"Create a trip",null,null);
         tripsPanel.addOption(2,"Complete a trip",null,null);
-        tripsPanel.addOption(4,"Display all trips from the port",null,null);
-        tripsPanel.addOption(5,"Display all trips from database",null,null);
-        tripsPanel.addOption(6,"Go back",null,null);
+        tripsPanel.addOption(3,"Display all trips from the port",null,null);
+        tripsPanel.addOption(4,"Display all trips from database",null,null);
+        tripsPanel.addOption(5,"Go back",null,null);
 
         OptionsInterface statisticPanel = new OptionsInterface("statisticPanel","Statistic Panel",4);
         statisticPanel.addOption(1,"Profile",null, null);

@@ -447,11 +447,36 @@ public class PMPort {
                 break;
             }
             case "Display all trips from the port": {
-                PMTrip.displayAllTripsFromDatabase(id);
+                Scanner input = new Scanner(System.in);
+
+                LineFilters filters = new LineFilters();
+                filters.addFilter(PMTrip.colDepartPort,this.id,FiltersType.INCLUDE);
+
+                while (true){
+                    System.out.println(PMTrip.createTableFromDatabase(filters));
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
-            case "Display trips from database": {
-                PMTrip.displayAllTripsFromDatabase(null);
+            case "Display all trips from database": {
+                Scanner input = new Scanner(System.in);
+
+                while (true){
+                    System.out.println(PMTrip.createTableFromDatabase(null));
+
+                    System.out.println("Go back?(Y/N)");
+                    String inputResult = input.next();
+
+                    if(inputResult.equals("Y") || inputResult.equals("y")){
+                        break;
+                    }
+                }
                 break;
             }
         }
@@ -463,11 +488,13 @@ public class PMPort {
                 break;
             }
             case "Port": {
+                System.out.println("Enter id: " + this.id);
+                System.out.println("Landing ability is" + this.landingAbility);
                 break;
             }case "Containers": {
                 LineFilters filters = new LineFilters();
-                filters.addFilter(PMVehicle.colCurrentPortId, this.id, FiltersType.INCLUDE);
-                ArrayList<String> lines = LinesHandler.getLinesFromDatabase(PMVehicle.vehiclesFilePath, filters);
+                filters.addFilter(PMContainer.colPortId, this.id, FiltersType.INCLUDE);
+                ArrayList<String> lines = LinesHandler.getLinesFromDatabase(PMContainer.containersFilePath, filters);
 
                 for(String line: lines){
                     String[] parts = line.split(",");

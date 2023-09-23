@@ -28,7 +28,7 @@ public class PMTrip {
     public static final int colDateArrived = 3;
     public static final int colDepartPort = 4;
     public static final int colArrivedPort = 5;
-    public static final int status = 6;
+    public static final int colStatus = 6;
     public static final String[] tripCols = {"Vehicle ID", "Date Depart", "Date Arrived", "Depart Port", "Arrived Port", "Status"};
     public static final String tripsFilePath = "./src/database/PMtrips.txt";
     public static OptionsInterface createOptionsInterfaceForTrips(String name, LineFilters lineFilters) {
@@ -100,76 +100,6 @@ public class PMTrip {
     public static double calculateFuelConsumption(String[] vehicleParts, double distance, ArrayList<String> containersLines){
         String type;
 
-        if(vehicleParts[0].matches(PMVehicle.regexTruckId)){
-            type = "vehicle";
-        }else{
-            type = "ship";
-        }
-
-        double dryStorage;
-        double openTop;
-        double openSide;
-        double refrigerated;
-        double liquid;
-
-        if(type.equals("ship")){
-            dryStorage = 3.5;
-            openTop = 2.8;
-            openSide = 2.7;
-            refrigerated = 4.5;
-            liquid = 4.8;
-        }else{
-            dryStorage = 4.6;
-            openTop = 3.2;
-            openSide = 3.2;
-            refrigerated = 5.4;
-            liquid = 5.3;
-        }
-
-        double fuelConsumption = 0;
-
-        double vehicleCurrentFuel = Tools.stringGallonToDouble(vehicleParts[PMVehicle.colCurrentFuel-1]);
-        double vehicleFuelTankCapacity = Tools.stringGallonToDouble(vehicleParts[PMVehicle.colFuelCapacity-1]);
-
-        for(String line : containersLines){
-            double rate = 0;
-
-            String[] containerParts = line.split(",");
-
-            String containerType = containerParts[PMContainer.colType-1];
-            double containerWeight = Tools.stringWeightToDouble(containerParts[PMContainer.colWeight-1]);
-
-            switch (containerType){
-                case "Open Top", "openTop":{
-                    rate = openTop;
-                    break;
-                }
-                case "Refrigerated, refrigerated":{
-                    rate = refrigerated;
-                    break;
-                }
-                case "Dry Storage, dryStorage":{
-                    rate = dryStorage;
-                    break;
-                }
-                case "Open side, openSide":{
-                    rate = openSide;
-                    break;
-                }
-                case "Liquid, liquid":{
-                    rate = liquid;
-                    break;
-                }
-            }
-
-           fuelConsumption = fuelConsumption + (distance * (rate + containerWeight));
-        }
-
-        return fuelConsumption;
-    }
-    public static boolean hasEnoughFuel(String[] vehicleParts, double distance, ArrayList<String> containersLines){
-        String type;
-
         if(vehicleParts[PMVehicle.colId-1].matches(PMVehicle.regexTruckId)){
             type = "vehicle";
         }else{
@@ -198,14 +128,13 @@ public class PMTrip {
 
         double fuelConsumption = 0.0;
 
-        double vehicleCurrentFuel = Tools.stringGallonToDouble(vehicleParts[PMVehicle.colCurrentFuel-1]);
-
         for(String line : containersLines){
             double rate = 0;
 
             String[] containerParts = line.split(",");
 
             String containerType = containerParts[PMContainer.colType-1];
+
             double containerWeight = Tools.stringWeightToDouble(containerParts[PMContainer.colWeight-1]);
 
             switch (containerType){
@@ -234,7 +163,7 @@ public class PMTrip {
             fuelConsumption = fuelConsumption + (distance * (rate + containerWeight));
         }
 
-        return fuelConsumption <= vehicleCurrentFuel;
+        return fuelConsumption * 4.546092;
     }
     public static double calculateContainersWeight(ArrayList<String> lines){
         double weight = 0;
@@ -285,6 +214,7 @@ public class PMTrip {
                 String[] vehicleParts = vehicleLine.split(",");
 
                 String vehicleId = vehicleParts[PMVehicle.colId-1];
+                double vehicleCurrentFuel = Tools.stringGallonToDouble(vehicleParts[PMVehicle.colCurrentFuel -1]);
 
                 boolean canUseVehicle = false;
                 if(vehicleId.matches(PMVehicle.regexTruckId)){
@@ -303,12 +233,15 @@ public class PMTrip {
                     if(containersLine.isEmpty()){
                         System.out.println("Please load at least one container on the vehicle before starting a trip!");
                     }else{
-                        if(hasEnoughFuel(vehicleParts,portsDistance,containersLine)){
+                        double consumption = calculateFuelConsumption(vehicleParts,portsDistance,containersLine);
+
+                        if(consumption <= vehicleCurrentFuel){
                             String date = getCurrentDate();
                             String line = vehicleId + "," + date + "," + "null" + "," + port.getId() + "," + arrivalPortId +"," + "Moving";
                             LinesHandler.addLineToDatabase(tripsFilePath, line);
 
                             vehicleParts[PMVehicle.colCurrentPortId - 1] = "null";
+                            vehicleParts[PMVehicle.colCurrentFuel-1] = Tools.doubleGallonToString(vehicleCurrentFuel - consumption);
 
                             filters = new LineFilters();
                             filters.addFilter(PMVehicle.colId,vehicleId,FiltersType.INCLUDE);
@@ -324,104 +257,50 @@ public class PMTrip {
                 }
             }
         }
-        /*
-        PromptsInterface questionInterface = new PromptsInterface("askQuestion","Ports input");
-        questionInterface.addPrompt("Enter departure port: ");
-        questionInterface.addPrompt("Enter arrival port: ");
-
-        TableInterface table = PMPort.createTableFromDatabase();
-
-        System.out.println(table);
-
-        HashMap<Number, String> results = questionInterface.startPrompts();
-        questionInterface.clearPrompt();
-
-        String departurePort = results.get(1);
-        String arrivalPort = results.get(2);
-        if(PortManagerMenu.checkLineHasId(PMPort.portsFilePath,departurePort, )
-                && PortManagerMenu.checkLineHasId(PMPort.portsFilePath,arrivalPort)){
-
-            OptionsInterface vehiclesMenu = new OptionsInterface("vehiclesMenu", "Choose a vehicle to add on a trip", 4);
-
-            table = PMVehicle.createTableFromDatabase(port.getId());
-            System.out.println(table);
-
-        };
-
-         */
-        // Display menu need input 2 ports, vehicle
-        // check if vehicle has atleast 1 container, fuel
-        // check ports landing, capacity
-        // add Trip to database
-        //PortManagerMenu.addLineToDatabase(path,line);
     }
     public static void completeTrip(PMPort port){
        LineFilters filters = new LineFilters();
        filters.addFilter(colArrivedPort,port.getId(),FiltersType.INCLUDE);
+       filters.addFilter(colStatus,"Landed",FiltersType.EXCLUDE);
 
        System.out.println(createTableFromDatabase(filters));
-        OptionsInterface tripsInterface = createOptionsInterfaceForTrips("Choose a vehicle", filters);
+       OptionsInterface tripsInterface = createOptionsInterfaceForTrips("Choose a vehicle", filters);
 
-        HashMap<String, String> interfaceData = tripsInterface.run(null);
+       HashMap<String, String> interfaceData = tripsInterface.run(null);
 
-        String option = interfaceData.get("option");
+       String option = interfaceData.get("option");
 
         if(!option.equals("Return")){
             String tripLine = interfaceData.get("data");
             String[] tripParts = tripLine.split(",");
 
             String vehicleId = tripParts[colVehicleId-1];
+            String dateDepart = tripParts[colDateDepart-1];
+
             filters = new LineFilters();
             filters.addFilter(colVehicleId,vehicleId, FiltersType.INCLUDE);
+
+            String vehicleLine = LinesHandler.getLinesFromDatabase(PMVehicle.vehiclesFilePath, filters).get(0);
+            String[] vehicleParts = vehicleLine.split(",");
+
+            vehicleParts[PMVehicle.colCurrentPortId-1] = port.getId();
+            tripParts[colStatus-1] = "Landed";
+            tripParts[colDateArrived-1] = getCurrentDate();
+
+            filters = new LineFilters();
+            filters.addFilter(colVehicleId,vehicleId, FiltersType.INCLUDE);
+            filters.addFilter(colDateDepart,dateDepart, FiltersType.INCLUDE);
+
+            LinesHandler.updateLinesFromDatabase(tripsFilePath,String.join(",",tripParts),filters);
+
+            filters = new LineFilters();
+            filters.addFilter(PMVehicle.colId,vehicleId, FiltersType.INCLUDE);
+            LinesHandler.updateLinesFromDatabase(PMVehicle.vehiclesFilePath,String.join(",",vehicleParts),filters);
+
+            System.out.println("Completed trip for " + vehicleId + " arrived to " + port.getId());
         }
     }
-    public static void displayAllTripsFromDatabase(String portId){
-        //Create a menu to ask if only display trips from the current port to another port or display all trips from any ports
-        //Collect all trips from database while adding each of them to table.
-        //println the table
-
-        OptionsInterface questionInterface = new OptionsInterface("askQuestion","Do you want to display all trips or trips fromn port only",2);
-
-        questionInterface.addOption(1,"Yes",null, null);
-        questionInterface.addOption(2,"No",null, null);
-
-        HashMap<String, String> interfaceData = questionInterface.run(null);
-
-        String id = interfaceData.get("id");
-        String option = interfaceData.get("option");
-
-        //#id , vehicleId, portA, portB, status, date
-
-        TableInterface table = new TableInterface("table","Trips",tripCols,",");
-
-        PromptsInterface askQuestion = new PromptsInterface("ask","Ask a question");
-        askQuestion.addPrompt("Enter username");
-        askQuestion.addPrompt("Enter password");
-
-        HashMap<Number, String> results = askQuestion.startPrompts();
-        String username = results.get(0);
-        String password = results.get(1);
-
-        //table.addRow();
-        //System.out.println(table);
-        //"a,b,c,e,f,h"
-        //PortManagerMenu.addLineToDatabase();
-        //PortManagerMenu.updateLinesWithId();
-        //PortManagerMenu.deleteLinesWithId();
-        //PortManagerMenu.lineHasId();
-
-        switch (option){
-            case "Yes":{
-
-                break;
-            }
-            case "No":{
-
-                break;
-            }
-            case "Return":{
-
-            }
-        }
+    public static void displayAllTripsFromDatabase(){
+        System.out.println(createTableFromDatabase(null));
     }
 }
