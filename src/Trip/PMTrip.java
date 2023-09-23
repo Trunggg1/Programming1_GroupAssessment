@@ -22,14 +22,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 public class PMTrip {
-    String[] tripsCols = {"Vehicle ID","Date Depart","Date Arrived","Depart Port","Arrived Port","Status"};
     public static final int colVehicleId = 1;
     public static final int colDateDepart = 2;
     public static final int colDateArrived = 3;
     public static final int colDepartPort = 4;
     public static final int colArrivedPort = 5;
     public static final int colStatus = 6;
-    public static final String[] tripCols = {"Vehicle ID", "Date Depart", "Date Arrived", "Depart Port", "Arrived Port", "Status"};
+    public static final String[] tripCols = {"Vehicle ID","Date Depart","Date Arrived","Depart Port","Arrived Port","Status"};
     public static final String tripsFilePath = "./src/database/PMtrips.txt";
     public static OptionsInterface createOptionsInterfaceForTrips(String name, LineFilters lineFilters) {
         ArrayList<String> lines = LinesHandler.getLinesFromDatabase(tripsFilePath,lineFilters);
@@ -165,16 +164,6 @@ public class PMTrip {
 
         return fuelConsumption * 4.546092;
     }
-    public static double calculateContainersWeight(ArrayList<String> lines){
-        double weight = 0;
-
-        for(String line: lines){
-            String[] containerParts = line.split(",");
-            weight = weight +  Double.parseDouble(containerParts[1].replaceAll("(?i)kg",""));
-        }
-
-        return weight;
-    }
     public static void createATrip(PMPort port){
         LineFilters filters = new LineFilters();
         filters.addFilter(1, port.getId(),FiltersType.EXCLUDE);
@@ -300,7 +289,10 @@ public class PMTrip {
             System.out.println("Completed trip for " + vehicleId + " arrived to " + port.getId());
         }
     }
-    public static void displayAllTripsFromDatabase(){
-        System.out.println(createTableFromDatabase(null));
+    public static void displayTripsByGivenDay(){
+        OptionsInterface dateMenu = new OptionsInterface("date","dateMenu",2);
+    }
+    public static void displayTripsByDaysRange(){
+
     }
 }
