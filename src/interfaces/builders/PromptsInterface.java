@@ -15,8 +15,14 @@ public class PromptsInterface extends Interface
         this.id = id;
         this.name = name;
     }
+    public void setName(String name) {
+        this.name = name;
+    }
     public void addPrompt(String prompt){
         prompts.add(prompt);
+    }
+    public void clearPrompt(){
+        prompts.clear();
     }
     public HashMap<Number, String> startPrompts(){
         Scanner input = new Scanner(System.in);
@@ -32,7 +38,7 @@ public class PromptsInterface extends Interface
             System.out.println(prompt);
             System.out.print("Input: ");
 
-            String inputResult = input.nextLine();
+            String inputResult = input.nextLine().trim();
 
             data.put(i, inputResult);
             i++;

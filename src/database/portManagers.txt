@@ -1,3 +1,3 @@
-#username, password, portId
-tri, 123, p-01
+#Username, Password, Port ID
+tri,123, p-01
 loc, 123456789, p-02

@@ -5,31 +5,49 @@ import interfaces.abstracts.Interface;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class OptionsInterface extends Interface {
-    private HashMap<String, OptionsInterface> childOptionsInterface = new HashMap<>();
+    private HashMap<Integer, OptionsInterface> childOptionsInterface = new HashMap<>();
     private String id;
     private String name;
     private int width = 2;
-    private HashMap<String, String> options = new HashMap<>();
+    private TreeMap<Integer, String> options = new TreeMap<>();
+    private TreeMap<Integer, String> optionsData = new TreeMap<>();
     public OptionsInterface(String id, String name, int width) {
         this.id = id;
         this.name = name;
         this.width = width;
     }
-   public void addOption(int number, String description, OptionsInterface childInterface){
-        options.put(String.valueOf(number), description);
-        childOptionsInterface.put(String.valueOf(number), childInterface);
+    private HashMap<String, String> getInterfaceData(int number){
+        HashMap<String, String> interfaceData = new HashMap<>();
+        interfaceData.put("id", id);
+        interfaceData.put("number", String.valueOf(number));
+        interfaceData.put("option", options.get(number));
+        interfaceData.put("data", optionsData.get(number));
+
+        return interfaceData;
+    }
+    public void clearOptions(){
+        this.options.clear();
+        this.childOptionsInterface.clear();
+        this.optionsData.clear();
+    }
+    public void addOption(int number, String optionName, String optionData,OptionsInterface childInterface){
+        this.options.put(number, optionName);
+        this.optionsData.put(number, optionData);
+        this.childOptionsInterface.put(number, childInterface);
     }
     public void removeOption(int number){
-        options.remove(String.valueOf(number));
-        childOptionsInterface.remove(String.valueOf(number));
+        this.options.remove(number);
+        this.optionsData.remove(number);
+        this.childOptionsInterface.remove(number);
     }
     public String getId() {
         return id;
     }
-    public HashMap<String, String> getOptions() {
-        return options;
+    public void setName(String name) {
+        this.name = name;
     }
     public String toString() {
         int gap = 5;
@@ -37,8 +55,12 @@ public class OptionsInterface extends Interface {
         int index = 0;
         String[] texts = new String[options.size()];
 
-        for (Map.Entry<String, String> entry : options.entrySet()) {
-            String optionNumber = entry.getKey();
+        if(this.options.size() < 2){
+            textLongestLength = this.name.length();
+        }
+
+        for (Map.Entry<Integer, String> entry : options.entrySet()) {
+            Integer optionNumber = entry.getKey();
             String optionText = entry.getValue();
 
             String text = optionNumber + ". " + optionText;
@@ -90,17 +112,18 @@ public class OptionsInterface extends Interface {
         String interfaceTexts = toString();
 
         if(interfaceId != null){
-            for (Map.Entry<String, OptionsInterface> entry : childOptionsInterface.entrySet()) {
+            for (Map.Entry<Integer, OptionsInterface> entry : childOptionsInterface.entrySet()) {
                 OptionsInterface childInterface = entry.getValue();
 
-                if(childInterface.getId().equals(interfaceId)){
-                    HashMap<String, String> result = childInterface.run(null);
+                if(childInterface!= null){
+                    if(childInterface.getId().equals(interfaceId)){
+                        HashMap<String, String> interfaceData = childInterface.run(null);
 
-                    if(result != null){
-                        return  result;
+                        if(interfaceData != null){
+                            return  interfaceData;
+                        }
+                        break;
                     }
-
-                    break;
                 }
             }
         }
@@ -116,36 +139,37 @@ public class OptionsInterface extends Interface {
 
             String inputResult = input.nextLine();
 
-            if(options.containsKey(inputResult)){
-                String textOption = options.get(inputResult);
+            if(inputResult.matches("\\d+")){
+                Integer number = Integer.parseInt(inputResult);
+                if(options.containsKey(number)){
+                    String textOption = options.get(number);
 
-                switch (textOption){
-                    case "Go back", "Exit":{
-                        keepRunning = false;
+                    switch (textOption){
+                        case "Go back", "Exit":{
+                            keepRunning = false;
 
-                        break;
-                    }
-                    default:{
-                        OptionsInterface childInterface = childOptionsInterface.get(inputResult);
-                        if(childInterface != null){
-                            HashMap<String, String> data = childInterface.run(null);
+                            break;
+                        }
+                        default:{
+                            OptionsInterface childInterface = childOptionsInterface.get(number);
+                            if(childInterface != null){
+                                HashMap<String, String> data = childInterface.run(null);
 
-                            if(data != null){
-                                return data;
+                                if(data != null){
+                                    return data;
+                                }
+                            }else{
+                                return getInterfaceData(number);
                             }
-                        }else{
-                            HashMap<String,String> data = new HashMap<>();
-
-                            data.put("id",id);
-                            data.put("option",textOption);
-                            return data;
                         }
                     }
-                }
 
+                }else{
+                    System.out.println("There is no option for input " + inputResult);
+                    count++;
+                }
             }else{
                 System.out.println("There is no option for input " + inputResult);
-                count++;
             }
         }
 
